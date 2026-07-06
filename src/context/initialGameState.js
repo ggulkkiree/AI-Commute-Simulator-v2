@@ -41,6 +41,8 @@ export const initialGameState = {
     eveningCheckedItems: [],
     plannedWakeUpTime: null,
     alarmChecked: false,
+    wakeUpDelayMinutes: 0,
+    wakeUpChoice: null,
   },
   eveningPackedItems: [],
   morningActivities: morningActivityDefinitions.map((activity) => ({

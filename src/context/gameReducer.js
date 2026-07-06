@@ -107,6 +107,8 @@ export function gameReducer(state, action) {
         studentChoices: {
           ...state.studentChoices,
           selectedAlarmTime: action.payload?.selectedAlarmTime ?? null,
+          wakeUpDelayMinutes: action.payload?.wakeUpDelayMinutes ?? 0,
+          wakeUpChoice: action.payload?.wakeUpChoice ?? null,
         },
       };
 

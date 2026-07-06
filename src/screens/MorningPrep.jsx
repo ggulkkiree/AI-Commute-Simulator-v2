@@ -7,11 +7,27 @@ import { GAME_ACTIONS } from '../context/gameActions.js';
 import { morningActivities } from '../data/morningActivities.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
-const taskEmoji = {
-  shower: '🚿',
-  breakfast: '🍚',
-  brushTeeth: '🪥',
-  changeClothes: '👕',
+const taskMeta = {
+  shower: {
+    emoji: '🚿',
+    label: '샤워하기',
+    description: '상쾌하게 하루를 시작해요.',
+  },
+  breakfast: {
+    emoji: '🍚',
+    label: '아침 먹기',
+    description: '든든하게 힘을 채워요.',
+  },
+  brushTeeth: {
+    emoji: '🪥',
+    label: '양치하기',
+    description: '깨끗하게 준비해요.',
+  },
+  changeClothes: {
+    emoji: '👕',
+    label: '옷 입기',
+    description: '출근할 옷으로 갈아입어요.',
+  },
 };
 
 const morningPrepTasks = morningActivities.filter(
@@ -85,7 +101,7 @@ export default function MorningPrep() {
             아침 준비 정보가 아직 없어요
           </p>
           <p className="mt-4 text-2xl leading-9 text-slate-600">
-            먼저 AI 출근 계획을 확인해 주세요.
+            AI 출근 계획을 확인한 뒤 아침 활동을 볼 수 있어요.
           </p>
           <PrimaryButton
             variant="secondary"
@@ -104,80 +120,91 @@ export default function MorningPrep() {
       <ScreenHeader
         studentName={studentName}
         title="아침 준비하기"
-        description="출근 전에 해야 할 일을 하나씩 확인해요."
+        description="출근 전에 해야 할 일을 하나씩 완료해요."
+        targetArrivalTime={aiPlanInput.arrivalTime}
       />
 
-      <InfoCard
-        title="오늘 출근 준비"
-        value={`${aiPlanInput.arrivalTime}까지 도착하기 위해 아침 준비를 해요.`}
-        description="활동 카드를 눌러 준비한 일을 확인해요."
-        className="mb-6"
-      />
-
-      <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="grid gap-5 sm:grid-cols-2">
-          <InfoCard
-            title="추천 기상 시간"
-            value={aiPlanResult.recommendedWakeUpTime}
-            highlight
-          />
-          <InfoCard
-            title="추천 출발 시간"
-            value={aiPlanResult.recommendedLeaveHomeTime}
-            highlight
-          />
+      <InfoCard className="mb-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
+              출근 전 아침 준비를 해요.
+            </p>
+            <p className="mt-3 text-2xl font-semibold leading-9 text-slate-600">
+              준비를 하나씩 눌러 완료해요.
+            </p>
+          </div>
+          <div className="rounded-[1.75rem] border-2 border-sky-100 bg-sky-50 px-6 py-4 text-2xl font-extrabold text-sky-800">
+            {completedTasks.length} / {morningPrepTasks.length} 완료
+          </div>
         </div>
+      </InfoCard>
 
-        <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">
-            오늘 할 일
-          </p>
-          <p className="mt-3 text-xl leading-8 text-slate-600">
-            네 가지 준비를 모두 확인하면 가방을 챙기러 갈 수 있어요.
-          </p>
-        </InfoCard>
-      </div>
-
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+      <div className="grid gap-5 lg:grid-cols-2">
         {morningPrepTasks.map((task) => {
           const isCompleted = completedTaskSet.has(task.id);
+          const meta = taskMeta[task.id] ?? {
+            emoji: '☀️',
+            label: task.label,
+            description: '준비를 완료해요.',
+          };
 
           return (
             <button
               key={task.id}
               type="button"
               onClick={() => handleTaskClick(task.id)}
-              className={`rounded-2xl border p-7 text-left shadow-sm transition focus:outline-none focus:ring-4 ${
+              className={`rounded-[2rem] border-2 p-7 text-left shadow-lg transition focus:outline-none focus:ring-4 ${
                 isCompleted
-                  ? 'border-emerald-200 bg-emerald-50 focus:ring-emerald-100'
-                  : 'border-slate-200 bg-white hover:bg-sky-50 focus:ring-sky-100'
+                  ? 'border-blue-400 bg-sky-50 ring-4 ring-blue-100 focus:ring-blue-100'
+                  : 'border-amber-100 bg-white/90 shadow-amber-100/60 hover:-translate-y-0.5 hover:bg-amber-50 focus:ring-amber-100'
               }`}
             >
-              <div className="flex items-center justify-between gap-4">
+              <div className="flex items-start justify-between gap-5">
                 <div className="flex items-center gap-5">
                   <span
-                    className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white text-5xl shadow-inner"
+                    className="flex h-24 w-24 shrink-0 items-center justify-center rounded-[1.75rem] bg-white text-6xl shadow-inner"
                     aria-hidden="true"
                   >
-                    {taskEmoji[task.id]}
+                    {meta.emoji}
                   </span>
-                  <span className="text-4xl font-bold text-slate-950">
-                    {task.label}
+                  <span>
+                    <span className="block text-4xl font-extrabold text-slate-950">
+                      {meta.label}
+                    </span>
+                    <span className="mt-3 block text-xl font-semibold leading-8 text-slate-600">
+                      {meta.description}
+                    </span>
                   </span>
                 </div>
-                {isCompleted ? (
-                  <span className="rounded-full bg-emerald-600 px-5 py-2 text-xl font-bold text-white">
-                    완료
-                  </span>
-                ) : (
-                  <span className="rounded-full bg-slate-100 px-5 py-2 text-xl font-bold text-slate-600">
-                    확인하기
-                  </span>
-                )}
+                <span
+                  className={`shrink-0 rounded-full px-5 py-2 text-xl font-extrabold ${
+                    isCompleted
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-slate-100 text-slate-600'
+                  }`}
+                >
+                  {isCompleted ? '✓ 완료' : '누르기'}
+                </span>
               </div>
             </button>
           );
         })}
+      </div>
+
+      <div className="mt-6 grid gap-5 lg:grid-cols-2">
+        <InfoCard
+          title="추천 기상 시간"
+          value={aiPlanResult.recommendedWakeUpTime}
+          description="이 시간에 일어나 준비를 시작해요."
+          highlight
+        />
+        <InfoCard
+          title="추천 출발 시간"
+          value={aiPlanResult.recommendedLeaveHomeTime}
+          description="준비가 끝나면 가방을 챙기고 출발해요."
+          highlight
+        />
       </div>
 
       <div className="mt-8 flex flex-col justify-end gap-4 sm:flex-row">

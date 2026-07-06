@@ -36,7 +36,7 @@ export default function AlarmSetup() {
       <section className="w-full">
         <ScreenHeader
           studentName={studentName}
-          title="알람을 맞춰요"
+          title="알람을 확인해요"
           description="먼저 AI 출근 계획을 확인해 주세요."
         />
 
@@ -45,7 +45,7 @@ export default function AlarmSetup() {
             알람으로 확인할 시간이 아직 없어요
           </p>
           <p className="mt-4 text-2xl leading-9 text-slate-600">
-            먼저 AI 출근 계획을 확인해 주세요.
+            AI 출근 계획을 확인한 뒤 추천 기상 시간을 볼 수 있어요.
           </p>
           <PrimaryButton
             variant="secondary"
@@ -63,49 +63,56 @@ export default function AlarmSetup() {
     <section className="w-full">
       <ScreenHeader
         studentName={studentName}
-        title="알람을 맞춰요"
-        description="내일 일어날 시간을 확인해요."
+        title="알람을 확인해요"
+        description="AI가 추천한 기상 시간을 보고 알람을 확인해요."
         targetArrivalTime={aiPlanInput.arrivalTime}
       />
 
-      <InfoCard
-        title="AI 추천 기상 시간"
-        value="아침 준비 시간을 생각해서 추천한 시간이에요."
-        className="mb-6"
-      />
-
-      <InfoCard className="mx-auto max-w-4xl text-center">
-        <div
-          className="mx-auto flex h-28 w-28 items-center justify-center rounded-full bg-sky-50 text-6xl shadow-inner"
-          aria-hidden="true"
-        >
-          ⏰
-        </div>
-        <p className="mt-8 text-7xl font-bold text-slate-950">
-          {aiPlanResult.recommendedWakeUpTime}
+      <InfoCard className="mb-6 text-center">
+        <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
+          이 시간에 일어나기로 해요
         </p>
-        <p className="mt-5 text-2xl leading-9 text-slate-600">
-          이 시간에 일어나면 아침 준비를 할 수 있어요.
+        <p className="mt-3 text-2xl font-semibold leading-9 text-slate-600">
+          아침 준비 시간을 생각해서 AI가 추천한 시간이에요.
         </p>
       </InfoCard>
 
-      <div className="mt-6 grid gap-5 lg:grid-cols-2">
-        <InfoCard
-          title="목표 도착 시간"
-          value={aiPlanInput.arrivalTime}
-          highlight
-        />
-        <InfoCard
-          title="추천 출발 시간"
-          value={aiPlanResult.recommendedLeaveHomeTime}
-          highlight
-        />
+      <div className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <InfoCard className="flex min-h-96 flex-col items-center justify-center text-center">
+          <div
+            className="flex h-36 w-36 items-center justify-center rounded-full bg-sky-50 text-8xl shadow-inner"
+            aria-hidden="true"
+          >
+            ⏰
+          </div>
+          <p className="mt-8 text-8xl font-extrabold leading-none text-slate-950">
+            {aiPlanResult.recommendedWakeUpTime}
+          </p>
+          <p className="mt-5 text-3xl font-extrabold text-slate-700">
+            일어날 시간
+          </p>
+        </InfoCard>
+
+        <div className="grid gap-6">
+          <InfoCard
+            title="집에서 출발할 시간"
+            value={aiPlanResult.recommendedLeaveHomeTime}
+            description="이 시간쯤 집에서 나가면 좋아요."
+            highlight
+          />
+          <InfoCard
+            title="도착 목표 시간"
+            value={aiPlanInput.arrivalTime}
+            description="내일 이 시간까지 도착해요."
+            highlight
+          />
+        </div>
       </div>
 
       <InfoCard className="mt-6">
         <p className="text-3xl font-bold text-slate-950">기억해요</p>
-        <p className="mt-4 rounded-2xl bg-sky-50 p-5 text-2xl font-bold leading-9 text-slate-800">
-          내일 아침에 알람을 확인해요.
+        <p className="mt-4 rounded-2xl bg-amber-50 p-5 text-2xl font-bold leading-9 text-slate-800">
+          알람을 확인했으면 이제 편하게 잘 준비를 해요.
         </p>
       </InfoCard>
 
@@ -117,7 +124,7 @@ export default function AlarmSetup() {
           가방 확인으로 돌아가기
         </PrimaryButton>
         <PrimaryButton onClick={handleConfirmAlarm}>
-          알람 맞췄어요
+          알람 확인했어요
         </PrimaryButton>
       </div>
     </section>

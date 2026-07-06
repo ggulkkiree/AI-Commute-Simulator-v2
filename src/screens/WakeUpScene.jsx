@@ -43,7 +43,7 @@ export default function WakeUpScene() {
             아침 준비 정보가 아직 없어요
           </p>
           <p className="mt-4 text-2xl leading-9 text-slate-600">
-            먼저 AI 출근 계획을 확인해 주세요.
+            AI 출근 계획을 확인한 뒤 아침 준비를 시작할 수 있어요.
           </p>
           <PrimaryButton
             variant="secondary"
@@ -62,48 +62,40 @@ export default function WakeUpScene() {
       <ScreenHeader
         studentName={studentName}
         title="아침이 되었어요"
-        description="일어나서 출근 준비를 시작해요."
+        description="일어나서 오늘 출근 준비를 시작해요."
       />
 
-      <InfoCard className="mx-auto max-w-4xl text-center">
-        <div className="mx-auto flex h-32 w-32 items-center justify-center rounded-full bg-amber-50 text-7xl shadow-inner">
+      <InfoCard className="mx-auto max-w-5xl bg-amber-50/70 text-center">
+        <div className="mx-auto flex h-36 w-36 items-center justify-center rounded-full bg-white text-8xl shadow-inner">
           <span aria-hidden="true">☀️</span>
         </div>
-        <p className="mt-8 text-5xl font-bold text-slate-950">
+        <p className="mt-8 text-5xl font-extrabold text-slate-950">
           좋은 아침이에요
         </p>
-        <p className="mt-5 text-2xl leading-9 text-slate-600">
-          오늘도 출근 준비를 시작해 볼까요?
+        <p className="mt-5 text-3xl font-bold leading-10 text-slate-700">
+          이제 일어나서 준비할 시간이에요.
         </p>
+        <div className="mx-auto mt-8 max-w-2xl rounded-[2rem] border-2 border-amber-100 bg-white px-8 py-7 shadow-inner">
+          <p className="text-2xl font-extrabold text-slate-500">기상 시간</p>
+          <p className="mt-3 text-7xl font-extrabold leading-none text-slate-950">
+            {aiPlanResult.recommendedWakeUpTime}
+          </p>
+        </div>
       </InfoCard>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+      <div className="mt-6 grid gap-5 lg:grid-cols-2">
         <InfoCard
-          title="추천 기상 시간"
-          value={aiPlanResult.recommendedWakeUpTime}
-          description="아침 준비 시간을 생각해서 추천한 시간이에요."
+          title="집에서 출발할 시간"
+          value={aiPlanResult.recommendedLeaveHomeTime}
+          description="아침 준비를 마치고 이 시간쯤 출발해요."
           highlight
         />
-
-        <InfoCard className="flex flex-col justify-center">
-          <p className="text-3xl font-bold text-slate-950">
-            오늘 출근 정보
-          </p>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl bg-amber-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">도착 시간</p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
-                오늘 {aiPlanInput.arrivalTime}까지 도착해요.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-amber-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">출발 시간</p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
-                {aiPlanResult.recommendedLeaveHomeTime}쯤 집에서 나가면 좋아요.
-              </p>
-            </div>
-          </div>
-        </InfoCard>
+        <InfoCard
+          title="도착 목표 시간"
+          value={aiPlanInput.arrivalTime}
+          description="오늘 이 시간까지 도착하는 것이 목표예요."
+          highlight
+        />
       </div>
 
       <div className="mt-8 flex flex-col justify-end gap-4 sm:flex-row">
@@ -113,7 +105,9 @@ export default function WakeUpScene() {
         >
           잠자기 화면으로 돌아가기
         </PrimaryButton>
-        <PrimaryButton onClick={handleWakeUp}>바로 일어나기</PrimaryButton>
+        <PrimaryButton onClick={handleWakeUp}>
+          일어나서 준비하기
+        </PrimaryButton>
       </div>
     </section>
   );

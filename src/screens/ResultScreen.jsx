@@ -12,12 +12,12 @@ const toneStyles = {
     iconBg: 'bg-white',
   },
   caution: {
-    icon: '🔎',
+    icon: '💡',
     card: 'border-amber-200 bg-amber-50',
     iconBg: 'bg-white',
   },
   practice: {
-    icon: '🌱',
+    icon: '🧭',
     card: 'border-sky-200 bg-sky-50',
     iconBg: 'bg-white',
   },
@@ -42,7 +42,7 @@ function createResultSummary({ aiPlanResult, studentChoices }) {
   const missingItems = getMissingItems(requiredItems, selectedItems);
 
   if (requiredItems.length > 0 && missingItems.length === 0) {
-    strengths.push('필요한 물건을 잘 챙겼어요.');
+    strengths.push('필요한 물건을 모두 챙겼어요.');
   } else if (missingItems.length > 0) {
     reviewPoints.push(`빠진 물건이 있어요: ${missingItems.join(', ')}`);
   }
@@ -62,7 +62,7 @@ function createResultSummary({ aiPlanResult, studentChoices }) {
   if (completedMorningTasks.length >= 4) {
     strengths.push('아침 준비를 모두 확인했어요.');
   } else {
-    reviewPoints.push('아침 준비 활동을 더 확인해 보면 좋아요.');
+    reviewPoints.push('아침 준비 활동을 다시 확인해 보면 좋아요.');
   }
 
   if (
@@ -82,7 +82,7 @@ function createResultSummary({ aiPlanResult, studentChoices }) {
   if (reviewPoints.length >= 3) {
     resultTitle = '다시 연습해 보면 좋아요';
     resultTone = 'practice';
-    resultMessage = '다음에는 한 단계씩 다시 확인해 봐요.';
+    resultMessage = '다음에는 각 단계를 다시 확인해 봐요.';
   } else if (reviewPoints.length >= 1) {
     resultTitle = '조금 더 확인하면 좋아요';
     resultTone = 'caution';
@@ -95,19 +95,27 @@ function createResultSummary({ aiPlanResult, studentChoices }) {
     resultMessage,
     strengths,
     reviewPoints,
-    nextStep: '출근 전에는 시간, 준비물, 버스 번호를 한 번 더 확인해요.',
+    nextStep: '출근 전에 시간, 준비물, 버스 번호를 한 번 더 확인해요.',
   };
 }
 
-function FeedbackList({ items, emptyText }) {
+function FeedbackList({ items, emptyText, tone = 'slate' }) {
   const displayItems = items.length > 0 ? items : [emptyText];
+  const toneClasses = {
+    slate: 'bg-slate-50 text-slate-900',
+    sky: 'bg-sky-50 text-slate-900',
+    amber: 'bg-amber-50 text-slate-900',
+    emerald: 'bg-emerald-50 text-slate-900',
+  };
 
   return (
     <ul className="mt-5 space-y-3">
       {displayItems.map((item) => (
         <li
           key={item}
-          className="rounded-2xl bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-900"
+          className={`rounded-[1.5rem] px-5 py-4 text-2xl font-bold leading-8 ${
+            toneClasses[tone] ?? toneClasses.slate
+          }`}
         >
           {item}
         </li>
@@ -136,11 +144,11 @@ export default function ResultScreen() {
 
   const summaryCards = [
     {
-      title: '목표 도착 시간',
+      title: '도착 목표',
       value: displayValue(aiPlanInput?.arrivalTime),
     },
     {
-      title: '도착 예상 시간',
+      title: '예상 도착',
       value: displayValue(aiPlanResult?.expectedArrivalTime),
     },
     {
@@ -166,22 +174,22 @@ export default function ResultScreen() {
       <ScreenHeader
         studentName={studentName}
         title="오늘의 출근길 결과"
-        description="오늘 선택을 함께 돌아봐요."
+        description="오늘 선택한 내용을 차근차근 돌아봐요."
         targetArrivalTime={aiPlanInput?.arrivalTime}
       />
 
       <article
-        className={`rounded-2xl border p-8 text-center shadow-sm ${toneStyle.card}`}
+        className={`rounded-[2rem] border-2 p-8 text-center shadow-lg ${toneStyle.card}`}
       >
         <div
-          className={`mx-auto flex h-28 w-28 items-center justify-center rounded-full text-6xl shadow-inner ${toneStyle.iconBg}`}
+          className={`mx-auto flex h-32 w-32 items-center justify-center rounded-full text-7xl shadow-inner ${toneStyle.iconBg}`}
         >
           <span aria-hidden="true">{toneStyle.icon}</span>
         </div>
-        <h2 className="mt-6 text-5xl font-bold text-slate-950">
+        <h2 className="mt-6 text-5xl font-extrabold text-slate-950">
           {resultSummary.resultTitle}
         </h2>
-        <p className="mx-auto mt-5 max-w-4xl text-2xl leading-9 text-slate-700">
+        <p className="mx-auto mt-5 max-w-4xl text-2xl font-bold leading-9 text-slate-700">
           {resultSummary.resultMessage}
         </p>
       </article>
@@ -199,24 +207,32 @@ export default function ResultScreen() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">잘한 점</p>
+          <p className="text-3xl font-extrabold text-slate-950">
+            🌱 잘한 점
+          </p>
           <FeedbackList
             items={resultSummary.strengths}
             emptyText="오늘 출근길을 끝까지 연습했어요."
+            tone="emerald"
           />
         </InfoCard>
 
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">다시 확인할 점</p>
+          <p className="text-3xl font-extrabold text-slate-950">
+            🔎 다시 확인할 점
+          </p>
           <FeedbackList
             items={resultSummary.reviewPoints}
             emptyText="다시 확인할 점이 많지 않아요. 잘했어요."
+            tone="amber"
           />
         </InfoCard>
 
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">내일 해볼 점</p>
-          <p className="mt-5 rounded-2xl bg-sky-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-950">
+          <p className="text-3xl font-extrabold text-slate-950">
+            🧭 내일 해볼 점
+          </p>
+          <p className="mt-5 rounded-[1.5rem] bg-sky-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-950">
             {resultSummary.nextStep}
           </p>
         </InfoCard>

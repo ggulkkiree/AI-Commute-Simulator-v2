@@ -62,7 +62,7 @@ function createGuidancePoints({
 
   if (extraItems.length > 0) {
     points.push(
-      '필요하지 않은 물건도 함께 선택했습니다. 필요한 물건과 선택 물건을 구분하는 연습이 필요합니다.',
+      '필요하지 않은 물건을 함께 선택했습니다. 필요한 물건과 선택 물건을 구분하는 연습이 필요합니다.',
     );
   }
 
@@ -117,7 +117,7 @@ function ReportList({ items, emptyText }) {
       {displayItems.map((item) => (
         <li
           key={item}
-          className="rounded-2xl bg-slate-50 px-5 py-4 text-xl font-bold leading-8 text-slate-900"
+          className="rounded-[1.5rem] bg-slate-50 px-5 py-4 text-xl font-bold leading-8 text-slate-900"
         >
           {item}
         </li>
@@ -154,23 +154,23 @@ export default function TeacherReport() {
 
   const planCards = [
     {
-      title: '목표 도착 시간',
+      title: '목표 도착',
       value: displayValue(aiPlanInput?.arrivalTime),
     },
     {
-      title: '추천 기상 시간',
+      title: '추천 기상',
       value: displayValue(aiPlanResult?.recommendedWakeUpTime),
     },
     {
-      title: '기록된 기상 시간',
+      title: '기록된 기상',
       value: displayValue(studentChoices?.selectedAlarmTime),
     },
     {
-      title: '추천 출발 시간',
+      title: '추천 출발',
       value: displayValue(aiPlanResult?.recommendedLeaveHomeTime),
     },
     {
-      title: '도착 예상 시간',
+      title: '예상 도착',
       value: displayValue(aiPlanResult?.expectedArrivalTime),
     },
     {
@@ -180,6 +180,10 @@ export default function TeacherReport() {
     {
       title: '이동 수단',
       value: displayValue(aiPlanInput?.transport ?? 'bus'),
+    },
+    {
+      title: '결과 요약',
+      value: resultSummary?.resultTitle ?? '확인 중',
     },
   ];
 
@@ -196,13 +200,13 @@ export default function TeacherReport() {
         <div className="grid gap-5 lg:grid-cols-3">
           <div>
             <p className="text-lg font-semibold text-slate-500">학생 이름</p>
-            <p className="mt-2 text-3xl font-bold text-slate-950">
+            <p className="mt-2 text-3xl font-extrabold text-slate-950">
               {studentName}
             </p>
           </div>
           <div>
             <p className="text-lg font-semibold text-slate-500">결과 요약</p>
-            <p className="mt-2 text-3xl font-bold text-slate-950">
+            <p className="mt-2 text-3xl font-extrabold text-slate-950">
               {resultSummary?.resultTitle ?? '결과 요약 확인 중'}
             </p>
           </div>
@@ -231,7 +235,9 @@ export default function TeacherReport() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">준비물 확인</p>
+          <p className="text-3xl font-extrabold text-slate-950">
+            준비물 확인
+          </p>
           <div className="mt-5 space-y-5">
             <div>
               <p className="text-xl font-bold text-slate-600">추천 준비물</p>
@@ -272,30 +278,32 @@ export default function TeacherReport() {
         </InfoCard>
 
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">버스 확인</p>
+          <p className="text-3xl font-extrabold text-slate-950">
+            버스 선택
+          </p>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl bg-sky-50 p-5">
+            <div className="rounded-[1.75rem] bg-sky-50 p-5">
               <p className="text-lg font-semibold text-slate-500">
                 AI 추천 버스
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
+              <p className="mt-2 text-3xl font-extrabold text-slate-950">
                 {aiPlanResult?.busNumber
                   ? `${aiPlanResult.busNumber}번`
                   : '확인 중'}
               </p>
             </div>
-            <div className="rounded-2xl bg-sky-50 p-5">
+            <div className="rounded-[1.75rem] bg-sky-50 p-5">
               <p className="text-lg font-semibold text-slate-500">
                 학생 선택 버스
               </p>
-              <p className="mt-2 text-3xl font-bold text-slate-950">
+              <p className="mt-2 text-3xl font-extrabold text-slate-950">
                 {studentChoices?.selectedBusNumber
                   ? `${studentChoices.selectedBusNumber}번`
                   : '확인 중'}
               </p>
             </div>
           </div>
-          <p className="mt-5 rounded-2xl bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-950">
+          <p className="mt-5 rounded-[1.75rem] bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-950">
             {busMatched
               ? '추천 버스와 같은 번호를 선택했습니다.'
               : '버스 번호를 다시 확인하는 연습이 필요합니다.'}
@@ -305,8 +313,10 @@ export default function TeacherReport() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">아침 준비 확인</p>
-          <p className="mt-4 text-4xl font-bold text-slate-950">
+          <p className="text-3xl font-extrabold text-slate-950">
+            아침 준비 확인
+          </p>
+          <p className="mt-4 text-4xl font-extrabold text-slate-950">
             {morningTaskCount} / 4
           </p>
           <ChipList
@@ -319,7 +329,9 @@ export default function TeacherReport() {
         </InfoCard>
 
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">이동 흐름 확인</p>
+          <p className="text-3xl font-extrabold text-slate-950">
+            이동 흐름 확인
+          </p>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             {movementChecks.map((item) => {
               const isChecked = Boolean(studentChoices?.[item.key]);
@@ -327,7 +339,7 @@ export default function TeacherReport() {
               return (
                 <div
                   key={item.key}
-                  className={`rounded-2xl border px-5 py-4 ${
+                  className={`rounded-[1.5rem] border px-5 py-4 ${
                     isChecked
                       ? 'border-emerald-100 bg-emerald-50'
                       : 'border-amber-100 bg-amber-50'
@@ -336,7 +348,7 @@ export default function TeacherReport() {
                   <p className="text-xl font-bold text-slate-950">
                     {item.label}
                   </p>
-                  <p className="mt-2 text-2xl font-bold text-slate-700">
+                  <p className="mt-2 text-2xl font-extrabold text-slate-700">
                     {isChecked ? '확인됨' : '확인 필요'}
                   </p>
                 </div>
@@ -348,8 +360,8 @@ export default function TeacherReport() {
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">
-            학생용 피드백 요약
+          <p className="text-3xl font-extrabold text-slate-950">
+            학생 피드백 요약
           </p>
           {resultSummary ? (
             <div className="mt-5 grid gap-5">
@@ -357,7 +369,7 @@ export default function TeacherReport() {
                 <p className="text-xl font-bold text-slate-600">잘한 점</p>
                 <ReportList
                   items={asArray(resultSummary.strengths)}
-                  emptyText="학생용 잘한 점 기록이 없습니다."
+                  emptyText="학생의 잘한 점 기록이 없습니다."
                 />
               </div>
               <div>
@@ -373,20 +385,20 @@ export default function TeacherReport() {
                 <p className="text-xl font-bold text-slate-600">
                   내일 해볼 점
                 </p>
-                <p className="mt-4 rounded-2xl bg-sky-50 px-5 py-4 text-xl font-bold leading-8 text-slate-950">
+                <p className="mt-4 rounded-[1.5rem] bg-sky-50 px-5 py-4 text-xl font-bold leading-8 text-slate-950">
                   {resultSummary.nextStep}
                 </p>
               </div>
             </div>
           ) : (
-            <p className="mt-5 rounded-2xl bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-900">
-              학생용 결과 요약이 아직 저장되지 않았습니다.
+            <p className="mt-5 rounded-[1.5rem] bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-900">
+              학생 결과 요약이 아직 저장되지 않았습니다.
             </p>
           )}
         </InfoCard>
 
         <InfoCard>
-          <p className="text-3xl font-bold text-slate-950">
+          <p className="text-3xl font-extrabold text-slate-950">
             교사용 지도 포인트
           </p>
           <ReportList

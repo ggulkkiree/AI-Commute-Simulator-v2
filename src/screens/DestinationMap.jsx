@@ -10,9 +10,21 @@ function displayValue(value) {
 }
 
 const walkingSteps = [
-  '정류장에서 내리기',
-  '횡단보도 확인하기',
-  '회사 입구로 가기',
+  {
+    icon: '🚏',
+    title: '정류장에서 내리기',
+    description: '회사 근처 정류장에 도착했어요.',
+  },
+  {
+    icon: '🚶',
+    title: '횡단보도 확인하기',
+    description: '주변을 살피고 천천히 걸어요.',
+  },
+  {
+    icon: '🏢',
+    title: '회사 입구로 가기',
+    description: '마지막으로 회사 입구까지 이동해요.',
+  },
 ];
 
 export default function DestinationMap() {
@@ -36,16 +48,22 @@ export default function DestinationMap() {
 
   const arrivalInfoCards = [
     {
-      title: '내린 곳',
-      value: '회사 근처 정류장',
+      title: '목표 도착 시간',
+      value: displayValue(aiPlanInput.arrivalTime),
     },
     {
-      title: '가는 곳',
-      value: '회사',
-    },
-    {
-      title: '도착 예상 시간',
+      title: '예상 도착 시간',
       value: displayValue(aiPlanResult.expectedArrivalTime),
+    },
+    {
+      title: '오늘 날씨',
+      value: displayValue(aiPlanInput.weather),
+    },
+    {
+      title: '내가 탄 버스',
+      value: selectedBusNumber
+        ? `${selectedBusNumber}번 버스`
+        : '확인 중',
     },
   ];
 
@@ -54,22 +72,25 @@ export default function DestinationMap() {
       <ScreenHeader
         studentName={studentName}
         title="회사까지 걸어가요"
-        description="정류장에서 내려 회사까지 이동해요."
+        description="정류장에서 내려 회사 입구까지 이동해요."
         targetArrivalTime={aiPlanInput.arrivalTime}
       />
 
-      <InfoCard
-        title="정류장에 도착했어요"
-        value="버스에서 내려 회사까지 걸어가요."
-        description={
-          hasCompletedBusRide
-            ? '길을 확인하고 천천히 이동해요.'
-            : '버스 이동 기록이 없어도 이동 확인을 계속할 수 있어요.'
-        }
-        className="mb-6"
-      />
+      <InfoCard className="mb-6 text-center">
+        <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
+          🚏 정류장 → 🚶 걷기 → 🏢 회사
+        </p>
+        <p className="mt-4 text-2xl font-semibold leading-9 text-slate-600">
+          길을 확인하고 안전하게 회사로 이동해요.
+        </p>
+        {!hasCompletedBusRide ? (
+          <p className="mx-auto mt-5 max-w-3xl rounded-[1.75rem] bg-amber-50 p-4 text-xl font-bold leading-8 text-amber-800">
+            버스 이동 기록이 없어도 경로 확인은 계속할 수 있어요.
+          </p>
+        ) : null}
+      </InfoCard>
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-5 lg:grid-cols-4">
         {arrivalInfoCards.map((card) => (
           <InfoCard
             key={card.title}
@@ -80,37 +101,28 @@ export default function DestinationMap() {
         ))}
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <InfoCard className="text-center">
-          <div className="mx-auto flex max-w-2xl items-center justify-center gap-5 rounded-3xl bg-emerald-50 px-8 py-10 text-7xl shadow-inner">
-            <span aria-hidden="true">🚏</span>
-            <span className="text-5xl font-bold text-slate-400" aria-hidden="true">
-              →
-            </span>
-            <span aria-hidden="true">🚶</span>
-            <span className="text-5xl font-bold text-slate-400" aria-hidden="true">
-              →
-            </span>
-            <span aria-hidden="true">🏢</span>
-          </div>
-          <p className="mt-8 text-4xl font-bold text-slate-950">
-            정류장에서 회사까지 걸어가요
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+        <InfoCard>
+          <p className="text-3xl font-extrabold text-slate-950">
+            회사까지 가는 길
           </p>
-          <p className="mt-4 text-2xl leading-9 text-slate-600">
-            길을 확인하고 천천히 이동해요.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
             {walkingSteps.map((step, index) => (
               <div
-                key={step}
-                className="rounded-2xl border border-emerald-100 bg-white p-5 text-left shadow-sm"
+                key={step.title}
+                className="rounded-[1.75rem] border-2 border-emerald-100 bg-emerald-50/70 p-5 shadow-sm"
               >
-                <p className="text-lg font-bold text-emerald-700">
+                <p className="text-lg font-extrabold text-emerald-700">
                   {index + 1}단계
                 </p>
-                <p className="mt-2 text-2xl font-bold text-slate-950">
-                  {step}
+                <p className="mt-3 text-5xl" aria-hidden="true">
+                  {step.icon}
+                </p>
+                <p className="mt-4 text-2xl font-extrabold text-slate-950">
+                  {step.title}
+                </p>
+                <p className="mt-3 text-lg font-semibold leading-7 text-slate-600">
+                  {step.description}
                 </p>
               </div>
             ))}
@@ -118,28 +130,25 @@ export default function DestinationMap() {
         </InfoCard>
 
         <InfoCard className="flex flex-col justify-center">
-          <p className="text-3xl font-bold text-slate-950">출근 정보</p>
+          <p className="text-3xl font-extrabold text-slate-950">
+            지금 확인할 것
+          </p>
           <div className="mt-5 grid gap-4">
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">
-                목표 도착 시간
-              </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
-                {displayValue(aiPlanInput.arrivalTime)}
+            <div className="rounded-[1.75rem] bg-sky-50 p-5">
+              <p className="text-lg font-bold text-slate-500">현재 위치</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                회사 근처 정류장
               </p>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">오늘 날씨</p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
-                {displayValue(aiPlanInput.weather)}
+            <div className="rounded-[1.75rem] bg-emerald-50 p-5">
+              <p className="text-lg font-bold text-slate-500">목적지</p>
+              <p className="mt-2 text-3xl font-extrabold text-slate-900">
+                회사 입구
               </p>
             </div>
-            <div className="rounded-2xl bg-slate-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">내가 탄 버스</p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
-                {selectedBusNumber ? `${selectedBusNumber}번 버스` : '확인 중'}
-              </p>
-            </div>
+            <p className="rounded-[1.75rem] bg-amber-50 p-5 text-xl font-bold leading-8 text-slate-700">
+              마지막 이동을 마치면 오늘 출근 결과를 확인해요.
+            </p>
           </div>
         </InfoCard>
       </div>

@@ -7,6 +7,12 @@ import { GAME_ACTIONS } from '../context/gameActions.js';
 import { busOptions } from '../data/busOptions.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
+const busDescriptions = {
+  200: '회사 방향 버스',
+  999: '다른 방향 버스',
+  119: '다른 번호 버스',
+};
+
 function hasBusPlan(aiPlanInput, aiPlanResult) {
   return Boolean(aiPlanInput?.arrivalTime && aiPlanResult?.busNumber);
 }
@@ -48,7 +54,7 @@ export default function BusStop() {
             버스 정보가 아직 없어요
           </p>
           <p className="mt-4 text-2xl leading-9 text-slate-600">
-            먼저 AI 출근 계획을 확인해 주세요.
+            AI 출근 계획을 확인한 뒤 버스를 선택할 수 있어요.
           </p>
           <PrimaryButton
             variant="secondary"
@@ -71,18 +77,23 @@ export default function BusStop() {
         targetArrivalTime={aiPlanInput.arrivalTime}
       />
 
-      <InfoCard
-        title="정류장에 도착했어요"
-        value={`${aiPlanInput.arrivalTime}까지 도착하기 위해 버스를 확인해요.`}
-        description={
-          hasStartedCommute
-            ? '정류장에서 버스 번호를 살펴봐요.'
-            : '출발 기록이 없어도 버스 선택 연습을 계속할 수 있어요.'
-        }
-        className="mb-6"
-      />
+      <InfoCard className="mb-6">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
+              정류장에서 버스 번호를 확인해요.
+            </p>
+            <p className="mt-3 text-2xl font-semibold leading-9 text-slate-600">
+              AI 추천 버스는 {aiPlanResult.busNumber}번이에요.
+            </p>
+          </div>
+          <div className="rounded-[1.75rem] border-2 border-sky-100 bg-sky-50 px-6 py-4 text-2xl font-extrabold text-sky-800">
+            현재 위치: 버스 정류장
+          </div>
+        </div>
+      </InfoCard>
 
-      <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr]">
+      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="space-y-6">
           <InfoCard
             title="AI 추천 버스"
@@ -92,11 +103,18 @@ export default function BusStop() {
           />
 
           <InfoCard>
-            <p className="text-3xl font-bold text-slate-950">선택 안내</p>
-            <p className="mt-4 text-2xl font-bold text-slate-700">
+            <p className="text-3xl font-extrabold text-slate-950">
+              선택한 버스
+            </p>
+            <p className="mt-4 rounded-[1.75rem] bg-amber-50 p-5 text-3xl font-extrabold text-slate-900">
               {selectedBusNumber
-                ? `선택한 버스: ${selectedBusNumber}번`
-                : '탈 버스를 선택해 주세요.'}
+                ? `${selectedBusNumber}번 버스`
+                : '아직 선택하지 않았어요'}
+            </p>
+            <p className="mt-4 text-xl font-semibold leading-8 text-slate-600">
+              {hasStartedCommute
+                ? '번호를 확인하고 버스 카드를 눌러요.'
+                : '출발 기록이 없어도 버스 선택 연습은 계속할 수 있어요.'}
             </p>
           </InfoCard>
         </div>
@@ -104,40 +122,50 @@ export default function BusStop() {
         <div className="grid gap-5 xl:grid-cols-3">
           {busOptions.map((option) => {
             const isSelected = selectedBusNumber === option.busNumber;
+            const isRecommended =
+              option.busNumber === aiPlanResult.busNumber;
 
             return (
               <button
                 key={option.busNumber}
                 type="button"
                 onClick={() => setSelectedBusNumber(option.busNumber)}
-                className={`rounded-2xl border p-7 text-left shadow-sm transition focus:outline-none focus:ring-4 ${
+                className={`rounded-[2rem] border-2 p-7 text-left shadow-lg transition focus:outline-none focus:ring-4 ${
                   isSelected
-                    ? 'border-emerald-200 bg-emerald-50 focus:ring-emerald-100'
-                    : 'border-slate-200 bg-white hover:bg-sky-50 focus:ring-sky-100'
+                    ? 'border-blue-400 bg-sky-50 ring-4 ring-blue-100 focus:ring-blue-100'
+                    : 'border-amber-100 bg-white/90 shadow-amber-100/60 hover:-translate-y-0.5 hover:bg-amber-50 focus:ring-amber-100'
                 }`}
               >
-                <div className="flex h-full flex-col justify-between gap-8">
+                <div className="flex min-h-72 flex-col justify-between gap-8">
                   <div>
-                    <p className="text-6xl font-bold text-slate-950">
+                    <p className="text-7xl font-extrabold text-slate-950">
                       {option.busNumber}
                     </p>
-                    <p className="mt-3 text-3xl font-bold text-slate-800">
+                    <p className="mt-3 text-3xl font-extrabold text-slate-800">
                       {option.busNumber}번 버스
                     </p>
-                    <p className="mt-4 text-xl leading-8 text-slate-600">
-                      {option.description}
+                    <p className="mt-4 text-xl font-semibold leading-8 text-slate-600">
+                      {busDescriptions[option.busNumber] ??
+                        option.description}
                     </p>
                   </div>
 
-                  <span
-                    className={`inline-flex w-fit rounded-full px-5 py-2 text-xl font-bold ${
-                      isSelected
-                        ? 'bg-emerald-600 text-white'
-                        : 'bg-slate-100 text-slate-600'
-                    }`}
-                  >
-                    {isSelected ? '선택했어요' : '선택하기'}
-                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    <span
+                      className={`inline-flex rounded-full px-5 py-2 text-xl font-extrabold ${
+                        isSelected
+                          ? 'bg-blue-500 text-white'
+                          : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {isSelected ? '✓ 선택했어요' : '선택하기'}
+                    </span>
+                    {isRecommended ? (
+                      <span className="inline-flex rounded-full bg-amber-100 px-5 py-2 text-xl font-extrabold text-amber-800">
+                        추천
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
               </button>
             );
@@ -156,7 +184,7 @@ export default function BusStop() {
           disabled={!selectedBusNumber}
           onClick={handleRideBus}
         >
-          버스 타기
+          버스에 타기
         </PrimaryButton>
       </div>
     </section>

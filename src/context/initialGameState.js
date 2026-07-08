@@ -8,7 +8,7 @@ const savedStudentList = loadStudentList(defaultStudents);
 
 // Initial state for the core commute simulation flow.
 export const initialGameState = {
-  currentScreen: SCREEN_IDS.studentSelect,
+  currentScreen: SCREEN_IDS.startScreen,
   studentList: savedStudentList,
   selectedStudent: savedStudent,
   studentLevel: savedStudent?.level ?? null,

@@ -1,5 +1,6 @@
 import { SCREEN_IDS } from '../data/screenIds.js';
 import { useGame } from '../context/GameContext.jsx';
+import StartScreen from '../screens/StartScreen.jsx';
 import StudentSelect from '../screens/StudentSelect.jsx';
 import CommuteInfo from '../screens/CommuteInfo.jsx';
 import AIPlanInput from '../screens/AIPlanInput.jsx';
@@ -21,6 +22,7 @@ import TeacherReport from '../screens/TeacherReport.jsx';
 import TeacherSettings from '../screens/TeacherSettings.jsx';
 
 const screenMap = {
+  [SCREEN_IDS.startScreen]: StartScreen,
   [SCREEN_IDS.studentSelect]: StudentSelect,
   [SCREEN_IDS.commuteInfo]: CommuteInfo,
   [SCREEN_IDS.aiPlanInput]: AIPlanInput,
@@ -44,7 +46,7 @@ const screenMap = {
 
 export default function ScreenRouter() {
   const { state } = useGame();
-  const CurrentScreen = screenMap[state.currentScreen] ?? StudentSelect;
+  const CurrentScreen = screenMap[state.currentScreen] ?? StartScreen;
 
   return <CurrentScreen />;
 }

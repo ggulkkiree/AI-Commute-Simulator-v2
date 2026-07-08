@@ -13,10 +13,10 @@ export const commuteConfig = {
   stopList: [
     '우리 집 앞 정류장',
     '중앙시장',
-    '아주터미널',
+    '우리동네',
     '본하이리 정류장',
   ],
   estimatedWalkMinutes: 20,
   estimatedBusMinutes: 30,
-  weatherOptions: ['맑음', '비', '더움', '추움', '미세먼지'],
+  weatherOptions: ['맑음', '비', '더움', '추움'],
 };

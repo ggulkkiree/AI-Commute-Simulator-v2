@@ -1,5 +1,6 @@
 // Core screen identifiers for the v2 commute simulation flow.
 export const SCREEN_IDS = {
+  startScreen: 'startScreen',
   studentSelect: 'studentSelect',
   commuteInfo: 'commuteInfo',
   aiPlanInput: 'aiPlanInput',
@@ -22,6 +23,7 @@ export const SCREEN_IDS = {
 };
 
 export const CORE_SCREEN_FLOW = [
+  SCREEN_IDS.startScreen,
   SCREEN_IDS.studentSelect,
   SCREEN_IDS.commuteInfo,
   SCREEN_IDS.aiPlanInput,

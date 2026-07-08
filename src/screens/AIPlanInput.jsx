@@ -7,7 +7,7 @@ import { useGame } from '../context/GameContext.jsx';
 import { commuteConfig } from '../data/commute.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
-const weatherOptions = ['맑음', '비', '더움', '추움'];
+const WEATHER_OPTIONS = ['맑음', '비', '더움', '추움'];
 
 const weatherEmoji = {
   맑음: '☀️',
@@ -15,6 +15,10 @@ const weatherEmoji = {
   더움: '🌀',
   추움: '🧥',
 };
+
+function getSafeWeather(weather) {
+  return WEATHER_OPTIONS.includes(weather) ? weather : '맑음';
+}
 
 function ChoiceButton({ label, selected, onClick }) {
   return (
@@ -38,9 +42,9 @@ export default function AIPlanInput() {
   const [arrivalTime, setArrivalTime] = useState(
     state.aiPlanInput?.arrivalTime ?? null,
   );
-  const [weather, setWeather] = useState(state.aiPlanInput?.weather ?? null);
+  const weather = getSafeWeather(state.weather ?? state.aiPlanInput?.weather);
   const studentName = state.selectedStudent?.name;
-  const canViewPlan = Boolean(arrivalTime && weather);
+  const canViewPlan = Boolean(arrivalTime);
 
   const handleViewPlan = () => {
     if (!canViewPlan) {
@@ -62,8 +66,8 @@ export default function AIPlanInput() {
     <section className="w-full">
       <ScreenHeader
         studentName={studentName}
-        title="AI에게 출근 계획 물어보기"
-        description="출근 시간과 날씨를 선택하면 AI가 출근 계획을 알려줘요."
+        title="AI에게 출근 계획을 물어봐요"
+        description="도착 목표 시간을 고르면 오늘 날씨에 맞춰 AI가 출근 계획을 알려줘요."
       />
 
       <div className="grid gap-6 xl:grid-cols-[0.75fr_1.25fr]">
@@ -76,19 +80,19 @@ export default function AIPlanInput() {
               🤖
             </div>
             <p className="mt-6 text-4xl font-extrabold leading-tight text-slate-950">
-              AI가 출근 계획을 도와줄게요
+              오늘 날씨를 반영해서 계획할게요.
             </p>
             <p className="mt-4 text-2xl font-semibold leading-9 text-slate-600">
-              도착 시간과 날씨를 고르면 추천 계획을 만들어요.
+              학생은 도착 목표 시간만 고르면 돼요.
             </p>
           </div>
 
           <div className="mt-8 rounded-3xl border-2 border-amber-100 bg-amber-50 p-5">
             <p className="text-xl font-extrabold text-amber-800">
-              선택할 정보
+              오늘의 날씨
             </p>
-            <p className="mt-2 text-2xl font-extrabold text-slate-900">
-              도착 시간 + 오늘 날씨
+            <p className="mt-2 text-4xl font-extrabold text-slate-900">
+              {weatherEmoji[weather]} {weather}
             </p>
           </div>
         </InfoCard>
@@ -98,7 +102,7 @@ export default function AIPlanInput() {
             <InfoCard className="min-h-80">
               <div>
                 <p className="text-3xl font-extrabold text-slate-950">
-                  출근 도착 시간
+                  목표 도착 시간
                 </p>
                 <p className="mt-2 text-xl font-semibold text-slate-600">
                   회사에 몇 시까지 도착해야 할까요?
@@ -117,26 +121,21 @@ export default function AIPlanInput() {
               </div>
             </InfoCard>
 
-            <InfoCard className="min-h-80">
-              <div>
-                <p className="text-3xl font-extrabold text-slate-950">
-                  오늘 날씨
+            <InfoCard className="min-h-80 bg-gradient-to-br from-sky-50 to-white">
+              <p className="text-3xl font-extrabold text-slate-950">
+                읽기 전용 날씨 정보
+              </p>
+              <div className="mt-8 rounded-[2rem] border-2 border-sky-100 bg-white px-7 py-8 text-center shadow-inner">
+                <p className="text-7xl" aria-hidden="true">
+                  {weatherEmoji[weather]}
                 </p>
-                <p className="mt-2 text-xl font-semibold text-slate-600">
-                  날씨에 맞게 준비할 수 있어요.
+                <p className="mt-4 text-5xl font-extrabold text-slate-950">
+                  {weather}
                 </p>
               </div>
-
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                {weatherOptions.map((option) => (
-                  <ChoiceButton
-                    key={option}
-                    label={`${weatherEmoji[option]} ${option}`}
-                    selected={weather === option}
-                    onClick={() => setWeather(option)}
-                  />
-                ))}
-              </div>
+              <p className="mt-5 text-xl font-bold leading-8 text-slate-600">
+                날씨는 오늘 출근 미션에서 자동으로 정해졌어요.
+              </p>
             </InfoCard>
           </div>
 
@@ -150,7 +149,7 @@ export default function AIPlanInput() {
                   버스를 타고 출근해요
                 </p>
                 <p className="mt-2 text-xl font-semibold text-slate-600">
-                  이번 연습에서는 버스 이용으로 고정해요.
+                  이번 연습에서는 200번 버스를 이용해요.
                 </p>
               </div>
               <div
@@ -172,7 +171,7 @@ export default function AIPlanInput() {
           이전으로
         </PrimaryButton>
         <PrimaryButton disabled={!canViewPlan} onClick={handleViewPlan}>
-          AI 계획 보기
+          AI 추천 계획 보기
         </PrimaryButton>
       </div>
     </section>

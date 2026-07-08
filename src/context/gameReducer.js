@@ -1,5 +1,6 @@
 import { GAME_ACTIONS } from './gameActions.js';
 import { initialGameState } from './initialGameState.js';
+import { SCREEN_IDS } from '../data/screenIds.js';
 
 export function gameReducer(state, action) {
   switch (action.type) {
@@ -186,7 +187,7 @@ export function gameReducer(state, action) {
     case GAME_ACTIONS.RESET_GAME_SESSION:
       return {
         ...state,
-        currentScreen: initialGameState.currentScreen,
+        currentScreen: SCREEN_IDS.studentSelect,
         targetArrivalTime: initialGameState.targetArrivalTime,
         weather: initialGameState.weather,
         aiPlanInput: initialGameState.aiPlanInput,

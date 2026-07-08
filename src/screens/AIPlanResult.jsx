@@ -34,7 +34,7 @@ const requiredItemsByWeather = {
 };
 
 const itemEmoji = {
-  교통카드: '🚌',
+  교통카드: '💳',
   스마트폰: '📱',
   물병: '💧',
   우산: '☂️',
@@ -42,9 +42,17 @@ const itemEmoji = {
   겉옷: '🧥',
 };
 
-function createRecommendedPlan(aiPlanInput) {
+const weatherEmoji = {
+  맑음: '☀️',
+  비: '☂️',
+  더움: '🌀',
+  추움: '🧥',
+};
+
+function createRecommendedPlan(aiPlanInput, sessionWeather) {
   const arrivalPlan = planByArrivalTime[aiPlanInput?.arrivalTime];
-  const requiredItems = requiredItemsByWeather[aiPlanInput?.weather];
+  const weather = aiPlanInput?.weather ?? sessionWeather ?? '맑음';
+  const requiredItems = requiredItemsByWeather[weather];
 
   if (!arrivalPlan || !requiredItems) {
     return null;
@@ -52,15 +60,16 @@ function createRecommendedPlan(aiPlanInput) {
 
   return {
     ...arrivalPlan,
+    weather,
     requiredItems,
   };
 }
 
 export default function AIPlanResult() {
   const { state, dispatch, goToScreen } = useGame();
-  const { aiPlanInput } = state;
+  const { aiPlanInput, weather: sessionWeather } = state;
   const studentName = state.selectedStudent?.name;
-  const recommendedPlan = createRecommendedPlan(aiPlanInput);
+  const recommendedPlan = createRecommendedPlan(aiPlanInput, sessionWeather);
 
   const handlePrepareWithPlan = () => {
     if (!recommendedPlan) {
@@ -80,15 +89,15 @@ export default function AIPlanResult() {
         <ScreenHeader
           studentName={studentName}
           title="AI가 추천한 출근 계획"
-          description="먼저 출근 시간과 날씨를 선택해 주세요."
+          description="먼저 목표 도착 시간을 선택해 주세요."
         />
 
         <InfoCard className="mx-auto max-w-3xl text-center">
           <p className="text-3xl font-bold text-slate-950">
-            출근 정보가 아직 없어요
+            출근 정보가 아직 없어요.
           </p>
           <p className="mt-4 text-2xl leading-9 text-slate-600">
-            먼저 출근 시간과 날씨를 선택해 주세요.
+            목표 도착 시간을 선택하면 AI 추천 계획을 볼 수 있어요.
           </p>
           <PrimaryButton
             variant="secondary"
@@ -134,7 +143,7 @@ export default function AIPlanResult() {
       <ScreenHeader
         studentName={studentName}
         title="AI가 추천한 출근 계획"
-        description="출근 시간에 맞춰 일어날 시간과 출발 시간을 확인해요."
+        description="목표 시간과 오늘 날씨에 맞춘 출근 계획이에요."
         targetArrivalTime={aiPlanInput.arrivalTime}
       />
 
@@ -147,22 +156,22 @@ export default function AIPlanResult() {
             🤖
           </div>
           <p className="mt-6 text-4xl font-extrabold leading-tight text-slate-950">
-            AI가 추천한 출근 계획이에요
+            AI가 출근 계획을 만들었어요.
           </p>
           <p className="mt-4 text-2xl font-semibold leading-9 text-slate-600">
-            이 계획을 보고 전날 준비를 시작해요.
+            오늘 날씨와 목표 도착 시간을 함께 반영했어요.
           </p>
         </InfoCard>
 
         <InfoCard>
           <p className="text-3xl font-extrabold text-slate-950">
-            출근 계획이 만들어졌어요
+            오늘 날씨와 준비물
           </p>
-          <p className="mt-4 text-4xl font-extrabold text-sky-700">
-            {aiPlanInput.arrivalTime}까지 도착하기 위한 추천 계획이에요.
+          <p className="mt-4 text-5xl font-extrabold text-sky-700">
+            {weatherEmoji[recommendedPlan.weather]} {recommendedPlan.weather}
           </p>
           <p className="mt-4 text-2xl font-semibold leading-9 text-slate-600">
-            {aiPlanInput.weather} 날씨에 맞춰 준비할 물건도 함께 확인해요.
+            날씨에 맞춰 아침에 챙길 물건을 확인해요.
           </p>
         </InfoCard>
       </div>
@@ -193,10 +202,10 @@ export default function AIPlanResult() {
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-3xl font-extrabold text-slate-950">
-              챙기면 좋은 물건
+              날씨에 맞는 준비물
             </p>
             <p className="mt-3 text-xl font-semibold text-slate-600">
-              날씨와 이동에 맞춰 준비해요.
+              아침에 가방에 넣을 물건을 기억해요.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -205,7 +214,7 @@ export default function AIPlanResult() {
                 key={item}
                 className="rounded-full border-2 border-amber-200 bg-amber-50 px-6 py-3 text-2xl font-extrabold text-slate-900 shadow-sm"
               >
-                <span aria-hidden="true">{itemEmoji[item] ?? '•'}</span>{' '}
+                <span aria-hidden="true">{itemEmoji[item] ?? '🎒'}</span>{' '}
                 {item}
               </span>
             ))}

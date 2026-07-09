@@ -145,7 +145,18 @@ export function gameReducer(state, action) {
         ...state,
         studentChoices: {
           ...state.studentChoices,
-          selectedBusNumber: action.payload?.selectedBusNumber ?? null,
+          selectedBusNumber:
+            action.payload?.selectedBusNumber ??
+            state.studentChoices?.selectedBusNumber ??
+            null,
+          currentArrivingBusIndex:
+            action.payload?.currentArrivingBusIndex ??
+            state.studentChoices?.currentArrivingBusIndex ??
+            0,
+          busStopDecisions:
+            action.payload?.busStopDecisions ??
+            state.studentChoices?.busStopDecisions ??
+            [],
         },
       };
 
@@ -154,7 +165,22 @@ export function gameReducer(state, action) {
         ...state,
         studentChoices: {
           ...state.studentChoices,
-          hasCompletedBusRide: action.payload?.hasCompletedBusRide ?? false,
+          hasCompletedBusRide:
+            action.payload?.hasCompletedBusRide ??
+            state.studentChoices?.hasCompletedBusRide ??
+            false,
+          currentStopIndex:
+            action.payload?.currentStopIndex ??
+            state.studentChoices?.currentStopIndex ??
+            0,
+          busRideDecisions:
+            action.payload?.busRideDecisions ??
+            state.studentChoices?.busRideDecisions ??
+            [],
+          gotOffAtStopName:
+            action.payload?.gotOffAtStopName ??
+            state.studentChoices?.gotOffAtStopName ??
+            null,
         },
       };
 
@@ -164,7 +190,21 @@ export function gameReducer(state, action) {
         studentChoices: {
           ...state.studentChoices,
           hasReachedDestinationArea:
-            action.payload?.hasReachedDestinationArea ?? false,
+            action.payload?.hasReachedDestinationArea ??
+            state.studentChoices?.hasReachedDestinationArea ??
+            false,
+          selectedDestinationId:
+            action.payload?.selectedDestinationId ??
+            state.studentChoices?.selectedDestinationId ??
+            null,
+          selectedDestinationName:
+            action.payload?.selectedDestinationName ??
+            state.studentChoices?.selectedDestinationName ??
+            null,
+          destinationAttempts:
+            action.payload?.destinationAttempts ??
+            state.studentChoices?.destinationAttempts ??
+            [],
         },
       };
 

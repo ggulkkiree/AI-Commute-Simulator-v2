@@ -1,192 +1,309 @@
-import { useState } from 'react';
-import InfoCard from '../components/InfoCard.jsx';
+import { useMemo, useState } from 'react';
+
 import PrimaryButton from '../components/PrimaryButton.jsx';
-import ScreenHeader from '../components/ScreenHeader.jsx';
 import { useGame } from '../context/GameContext.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
 import { busOptions } from '../data/busOptions.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
-const busDescriptions = {
-  200: '회사 방향 버스',
-  999: '다른 방향 버스',
-  119: '다른 번호 버스',
+const MASCOT_IMAGE = '/images/mascot/ai_robot_guide.png';
+
+const TEXT = {
+  chapter: '\ucd9c\uadfc\uae38 \ud310\ub2e8',
+  title: '\ubc84\uc2a4\uac00 \ub3c4\ucc29\ud588\uc5b4\uc694',
+  description:
+    '\ubc84\uc2a4 \ubc88\ud638\ub97c \ud655\uc778\ud558\uace0 \ud0c8\uc9c0 \uae30\ub2e4\ub9b4\uc9c0 \uc120\ud0dd\ud574\uc694.',
+  noPlanTitle: '\ud655\uc778\ud560 \ubc84\uc2a4 \uc815\ubcf4\uac00 \uc544\uc9c1 \uc5c6\uc5b4\uc694',
+  noPlanDescription:
+    'AI \ucd9c\uadfc \uacc4\ud68d\uc744 \uba3c\uc800 \ud655\uc778\ud558\uba74 \ubc84\uc2a4 \ubc88\ud638\ub97c \ubcfc \uc218 \uc788\uc5b4\uc694.',
+  backPlan: 'AI \uacc4\ud68d \ub2e4\uc2dc \ubcf4\uae30',
+  aiBubble:
+    '\uc9c0\uae08 \uc628 \ubc84\uc2a4 \ubc88\ud638\uc640 \ud0c0\uc57c \ud560 \ubc84\uc2a4\ub97c \ube44\uad50\ud574\uc694.',
+  aiLabel: 'AI \uc548\ub0b4',
+  aiAlt: 'AI guide robot',
+  currentBus: '\uc9c0\uae08 \uc628 \ubc84\uc2a4',
+  targetBus: '\ud0c0\uc57c \ud560 \ubc84\uc2a4',
+  route: '\ud68c\uc0ac \ubc29\ud5a5',
+  stop: '\uc6b0\ub9ac \ub3d9\ub124 \uc815\ub958\uc7a5',
+  waitCount: '\uae30\ub2e4\ub9b0 \ud69f\uc218',
+  mission: '\ubc84\uc2a4 \ubc88\ud638\ub97c \ud655\uc778\ud574\uc694',
+  ride: '\uc774 \ubc84\uc2a4 \ud0c0\uae30',
+  wait: '\ub2e4\uc74c \ubc84\uc2a4 \uae30\ub2e4\ub9ac\uae30',
+  backCommute: '\ucd9c\ubc1c \ud654\uba74\uc73c\ub85c \ub3cc\uc544\uac00\uae30',
+  busSuffix: '\ubc88',
+};
+
+const busDetails = {
+  200: {
+    direction: TEXT.route,
+    destination: '\ud68c\uc0ac \uadfc\ucc98 \uc815\ub958\uc7a5',
+    color: 'from-blue-500 to-sky-400',
+  },
+  999: {
+    direction: '\ub2e4\ub978 \ub3d9\ub124 \ubc29\ud5a5',
+    destination: '\uc911\uc559\uc2dc\uc7a5 \ubc29\ud5a5',
+    color: 'from-violet-500 to-purple-400',
+  },
+  119: {
+    direction: '\ub2e4\ub978 \ubc88\ud638 \ubc84\uc2a4',
+    destination: '\ub3c4\uc11c\uad00 \ubc29\ud5a5',
+    color: 'from-amber-400 to-orange-400',
+  },
 };
 
 function hasBusPlan(aiPlanInput, aiPlanResult) {
   return Boolean(aiPlanInput?.arrivalTime && aiPlanResult?.busNumber);
 }
 
-export default function BusStop() {
+function normalizeBusNumber(busNumber) {
+  return String(busNumber ?? '200').replace(TEXT.busSuffix, '').trim();
+}
+
+function createArrivalSequence(targetBusNumber) {
+  const target = normalizeBusNumber(targetBusNumber);
+  const options = busOptions.length > 0 ? busOptions : [{ busNumber: target }];
+  const uniqueOptions = options.filter(
+    (option, index, array) =>
+      array.findIndex(
+        (candidate) =>
+          normalizeBusNumber(candidate.busNumber) ===
+          normalizeBusNumber(option.busNumber),
+      ) === index,
+  );
+  const otherBuses = uniqueOptions.filter(
+    (option) => normalizeBusNumber(option.busNumber) !== target,
+  );
+  const targetBus =
+    uniqueOptions.find((option) => normalizeBusNumber(option.busNumber) === target) ??
+    { busNumber: target, description: TEXT.route };
+
+  return [...otherBuses, targetBus].map((option) => ({
+    ...option,
+    busNumber: normalizeBusNumber(option.busNumber),
+  }));
+}
+
+function BusIllustration({ busNumber, color }) {
+  return (
+    <div className="relative mx-auto h-64 w-full max-w-3xl lg:h-72">
+      <div className="absolute inset-x-4 bottom-2 h-12 rounded-[50%] bg-slate-400/30 blur-sm" />
+      <div
+        className={`absolute inset-x-0 bottom-8 h-52 rounded-[2rem] bg-gradient-to-r ${color} shadow-2xl`}
+      >
+        <div className="absolute left-8 top-8 grid w-2/5 grid-cols-2 gap-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <span
+              key={index}
+              className="h-12 rounded-xl border-2 border-white/70 bg-sky-100/80 shadow-inner"
+            />
+          ))}
+        </div>
+        <div className="absolute right-8 top-6 rounded-[1.4rem] bg-slate-900 px-8 py-4 text-5xl font-black text-yellow-300 shadow-inner">
+          {busNumber}
+        </div>
+        <div className="absolute bottom-8 left-10 h-16 w-16 rounded-full border-[0.7rem] border-slate-800 bg-slate-200" />
+        <div className="absolute bottom-8 right-10 h-16 w-16 rounded-full border-[0.7rem] border-slate-800 bg-slate-200" />
+        <div className="absolute bottom-24 left-8 h-5 w-10 rounded-full bg-yellow-200" />
+        <div className="absolute bottom-24 right-8 h-5 w-10 rounded-full bg-yellow-200" />
+      </div>
+    </div>
+  );
+}
+
+function BusStop() {
   const { state, dispatch, goToScreen } = useGame();
   const { aiPlanInput, aiPlanResult } = state;
-  const studentName = state.selectedStudent?.name;
-  const savedBusNumber = state.studentChoices?.selectedBusNumber ?? null;
-  const hasStartedCommute = Boolean(state.studentChoices?.hasStartedCommute);
-  const [selectedBusNumber, setSelectedBusNumber] = useState(savedBusNumber);
-  const canShowBusPlan = hasBusPlan(aiPlanInput, aiPlanResult);
+  const targetBusNumber = normalizeBusNumber(aiPlanResult?.busNumber);
+  const arrivalSequence = useMemo(
+    () => createArrivalSequence(targetBusNumber),
+    [targetBusNumber],
+  );
+  const savedIndex = state.studentChoices?.currentArrivingBusIndex ?? 0;
+  const initialIndex =
+    arrivalSequence.length > 0 ? savedIndex % arrivalSequence.length : 0;
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [decisions, setDecisions] = useState(
+    state.studentChoices?.busStopDecisions ?? [],
+  );
+  const currentBus = arrivalSequence[currentIndex] ?? arrivalSequence[0];
+  const currentBusNumber = normalizeBusNumber(currentBus?.busNumber);
+  const currentDetails = busDetails[currentBusNumber] ?? {
+    direction: currentBus?.description ?? TEXT.route,
+    destination: '\ubaa9\uc801\uc9c0 \ud655\uc778',
+    color: 'from-blue-500 to-sky-400',
+  };
 
-  const handleRideBus = () => {
-    if (!selectedBusNumber) {
-      return;
-    }
+  const saveBusStopProgress = (nextDecisions, nextIndex) => {
+    dispatch({
+      type: GAME_ACTIONS.SAVE_BUS_SELECTION,
+      payload: {
+        busStopDecisions: nextDecisions,
+        currentArrivingBusIndex: nextIndex,
+      },
+    });
+  };
+
+  const createDecision = (action) => ({
+    busNumber: currentBusNumber,
+    action,
+    isTargetBus: currentBusNumber === targetBusNumber,
+  });
+
+  const handleWaitForNextBus = () => {
+    const nextIndex = (currentIndex + 1) % arrivalSequence.length;
+    const nextDecisions = [...decisions, createDecision('wait')];
+
+    setDecisions(nextDecisions);
+    setCurrentIndex(nextIndex);
+    saveBusStopProgress(nextDecisions, nextIndex);
+  };
+
+  const handleRideCurrentBus = () => {
+    const nextDecisions = [...decisions, createDecision('ride')];
 
     dispatch({
       type: GAME_ACTIONS.SAVE_BUS_SELECTION,
       payload: {
-        selectedBusNumber,
+        selectedBusNumber: currentBusNumber,
+        busStopDecisions: nextDecisions,
+        currentArrivingBusIndex: currentIndex,
       },
     });
     goToScreen(SCREEN_IDS.busRide);
   };
 
-  if (!canShowBusPlan) {
+  if (!hasBusPlan(aiPlanInput, aiPlanResult)) {
     return (
-      <section className="w-full">
-        <ScreenHeader
-          studentName={studentName}
-          title="버스 정류장"
-          description="먼저 AI 출근 계획을 확인해 주세요."
-        />
-
-        <InfoCard className="mx-auto max-w-3xl text-center">
-          <p className="text-3xl font-bold text-slate-950">
-            버스 정보가 아직 없어요
+      <div className="space-y-6">
+        <header className="rounded-[2rem] border-4 border-amber-200 bg-white/90 p-7 text-center shadow-xl">
+          <p className="text-lg font-black text-amber-700">{TEXT.chapter}</p>
+          <h1 className="mt-2 text-4xl font-black text-slate-900">
+            {TEXT.noPlanTitle}
+          </h1>
+          <p className="mt-3 text-xl font-bold text-slate-600">
+            {TEXT.noPlanDescription}
           </p>
-          <p className="mt-4 text-2xl leading-9 text-slate-600">
-            AI 출근 계획을 확인한 뒤 버스를 선택할 수 있어요.
-          </p>
-          <PrimaryButton
-            variant="secondary"
-            className="mt-8"
-            onClick={() => goToScreen(SCREEN_IDS.aiPlanResult)}
-          >
-            AI 계획 화면으로 돌아가기
+        </header>
+        <div className="mx-auto max-w-md">
+          <PrimaryButton onClick={() => goToScreen(SCREEN_IDS.aiPlanResult)}>
+            {TEXT.backPlan}
           </PrimaryButton>
-        </InfoCard>
-      </section>
+        </div>
+      </div>
     );
   }
 
   return (
-    <section className="w-full">
-      <ScreenHeader
-        studentName={studentName}
-        title="버스 정류장"
-        description="버스 번호를 보고 탈 버스를 선택해요."
-        targetArrivalTime={aiPlanInput.arrivalTime}
-      />
+    <div className="space-y-5">
+      <header className="rounded-[2rem] border-4 border-amber-200 bg-white/90 p-6 text-center shadow-xl">
+        <p className="text-lg font-black text-amber-700">{TEXT.chapter}</p>
+        <h1 className="mt-2 text-4xl font-black text-slate-900">{TEXT.title}</h1>
+        <p className="mt-2 text-xl font-bold text-slate-600">
+          {TEXT.description}
+        </p>
+      </header>
 
-      <InfoCard className="mb-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
-              정류장에서 버스 번호를 확인해요.
-            </p>
-            <p className="mt-3 text-2xl font-semibold leading-9 text-slate-600">
-              AI 추천 버스는 {aiPlanResult.busNumber}번이에요.
-            </p>
-          </div>
-          <div className="rounded-[1.75rem] border-2 border-sky-100 bg-sky-50 px-6 py-4 text-2xl font-extrabold text-sky-800">
-            현재 위치: 버스 정류장
-          </div>
-        </div>
-      </InfoCard>
+      <section className="relative overflow-hidden rounded-[2.5rem] border-4 border-sky-200 bg-gradient-to-b from-sky-200 via-sky-50 to-emerald-100 p-5 shadow-2xl">
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-slate-300/70" />
+        <div className="absolute bottom-16 left-0 right-0 h-3 bg-yellow-300/80" />
+        <div className="relative grid gap-5 lg:grid-cols-[260px_minmax(0,1fr)]">
+          <aside className="flex min-h-[520px] flex-col justify-between rounded-[2rem] border-4 border-white bg-white/85 p-5 shadow-xl">
+            <div className="rounded-[1.5rem] border-2 border-sky-200 bg-sky-50 p-5 text-center shadow-inner">
+              <p className="text-xl font-black text-slate-800">{TEXT.aiBubble}</p>
+            </div>
+            <div className="flex flex-1 items-end justify-center py-4">
+              <img
+                src={MASCOT_IMAGE}
+                alt={TEXT.aiAlt}
+                className="h-64 w-full object-contain"
+              />
+            </div>
+            <div className="rounded-[1.5rem] bg-blue-50 p-4 text-center">
+              <p className="text-sm font-bold text-blue-600">{TEXT.aiLabel}</p>
+              <p className="mt-1 text-lg font-black text-slate-800">
+                {TEXT.mission}
+              </p>
+            </div>
+          </aside>
 
-      <div className="grid gap-6 lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="space-y-6">
-          <InfoCard
-            title="AI 추천 버스"
-            value={`${aiPlanResult.busNumber}번 버스`}
-            description="출근 계획에서 확인한 버스예요."
-            highlight
-          />
+          <main className="rounded-[2rem] border-4 border-white bg-white/90 p-5 shadow-xl">
+            <div className="grid gap-5 xl:grid-cols-[1fr_280px]">
+              <div className="rounded-[2rem] border-4 border-amber-200 bg-gradient-to-b from-white to-amber-50 p-5 text-center shadow-inner">
+                <p className="text-2xl font-black text-slate-700">
+                  {TEXT.currentBus}
+                </p>
+                <BusIllustration
+                  busNumber={currentBusNumber}
+                  color={currentDetails.color}
+                />
+                <p className="mt-1 text-7xl font-black text-slate-950">
+                  {currentBusNumber}
+                  {TEXT.busSuffix}
+                </p>
+                <p className="mt-3 text-3xl font-black text-slate-700">
+                  {currentDetails.direction}
+                </p>
+              </div>
 
-          <InfoCard>
-            <p className="text-3xl font-extrabold text-slate-950">
-              선택한 버스
-            </p>
-            <p className="mt-4 rounded-[1.75rem] bg-amber-50 p-5 text-3xl font-extrabold text-slate-900">
-              {selectedBusNumber
-                ? `${selectedBusNumber}번 버스`
-                : '아직 선택하지 않았어요'}
-            </p>
-            <p className="mt-4 text-xl font-semibold leading-8 text-slate-600">
-              {hasStartedCommute
-                ? '번호를 확인하고 버스 카드를 눌러요.'
-                : '출발 기록이 없어도 버스 선택 연습은 계속할 수 있어요.'}
-            </p>
-          </InfoCard>
-        </div>
-
-        <div className="grid gap-5 xl:grid-cols-3">
-          {busOptions.map((option) => {
-            const isSelected = selectedBusNumber === option.busNumber;
-            const isRecommended =
-              option.busNumber === aiPlanResult.busNumber;
-
-            return (
-              <button
-                key={option.busNumber}
-                type="button"
-                onClick={() => setSelectedBusNumber(option.busNumber)}
-                className={`rounded-[2rem] border-2 p-7 text-left shadow-lg transition focus:outline-none focus:ring-4 ${
-                  isSelected
-                    ? 'border-blue-400 bg-sky-50 ring-4 ring-blue-100 focus:ring-blue-100'
-                    : 'border-amber-100 bg-white/90 shadow-amber-100/60 hover:-translate-y-0.5 hover:bg-amber-50 focus:ring-amber-100'
-                }`}
-              >
-                <div className="flex min-h-72 flex-col justify-between gap-8">
-                  <div>
-                    <p className="text-7xl font-extrabold text-slate-950">
-                      {option.busNumber}
-                    </p>
-                    <p className="mt-3 text-3xl font-extrabold text-slate-800">
-                      {option.busNumber}번 버스
-                    </p>
-                    <p className="mt-4 text-xl font-semibold leading-8 text-slate-600">
-                      {busDescriptions[option.busNumber] ??
-                        option.description}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    <span
-                      className={`inline-flex rounded-full px-5 py-2 text-xl font-extrabold ${
-                        isSelected
-                          ? 'bg-blue-500 text-white'
-                          : 'bg-slate-100 text-slate-600'
-                      }`}
-                    >
-                      {isSelected ? '✓ 선택했어요' : '선택하기'}
-                    </span>
-                    {isRecommended ? (
-                      <span className="inline-flex rounded-full bg-amber-100 px-5 py-2 text-xl font-extrabold text-amber-800">
-                        추천
-                      </span>
-                    ) : null}
-                  </div>
+              <div className="grid gap-4">
+                <div className="rounded-[1.75rem] border-4 border-blue-200 bg-blue-50 p-5 text-center shadow-lg">
+                  <p className="text-lg font-black text-blue-700">
+                    {TEXT.targetBus}
+                  </p>
+                  <p className="mt-2 text-5xl font-black text-slate-950">
+                    {targetBusNumber}
+                    {TEXT.busSuffix}
+                  </p>
                 </div>
-              </button>
-            );
-          })}
+                <div className="rounded-[1.75rem] border-4 border-emerald-200 bg-emerald-50 p-5 shadow-lg">
+                  <p className="text-lg font-black text-emerald-700">
+                    {TEXT.stop}
+                  </p>
+                  <p className="mt-2 break-keep text-xl font-bold text-slate-700">
+                    {currentDetails.destination}
+                  </p>
+                </div>
+                <div className="rounded-[1.75rem] border-4 border-amber-200 bg-amber-50 p-5 text-center shadow-lg">
+                  <p className="text-lg font-black text-amber-700">
+                    {TEXT.waitCount}
+                  </p>
+                  <p className="mt-2 text-5xl font-black text-slate-950">
+                    {decisions.filter((decision) => decision.action === 'wait').length}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </main>
         </div>
-      </div>
 
-      <div className="mt-8 flex flex-col justify-end gap-4 sm:flex-row">
-        <PrimaryButton
-          variant="secondary"
-          onClick={() => goToScreen(SCREEN_IDS.commuteScreen)}
-        >
-          출발 화면으로 돌아가기
-        </PrimaryButton>
-        <PrimaryButton
-          disabled={!selectedBusNumber}
-          onClick={handleRideBus}
-        >
-          버스에 타기
-        </PrimaryButton>
-      </div>
-    </section>
+        <div className="relative mt-5 grid gap-4 md:grid-cols-2">
+          <PrimaryButton
+            className="py-6 text-2xl"
+            onClick={handleRideCurrentBus}
+          >
+            {TEXT.ride}
+          </PrimaryButton>
+          <PrimaryButton
+            variant="secondary"
+            className="border-4 border-amber-200 bg-amber-50 py-6 text-2xl text-amber-800 hover:bg-amber-100"
+            onClick={handleWaitForNextBus}
+          >
+            {TEXT.wait}
+          </PrimaryButton>
+        </div>
+
+        <div className="relative mt-4 flex justify-center">
+          <PrimaryButton
+            variant="secondary"
+            className="text-base lg:text-lg"
+            onClick={() => goToScreen(SCREEN_IDS.commuteScreen)}
+          >
+            {TEXT.backCommute}
+          </PrimaryButton>
+        </div>
+      </section>
+    </div>
   );
 }
+
+export default BusStop;

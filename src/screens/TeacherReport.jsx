@@ -1,115 +1,329 @@
 import InfoCard from '../components/InfoCard.jsx';
 import PrimaryButton from '../components/PrimaryButton.jsx';
-import ScreenHeader from '../components/ScreenHeader.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
 import { useGame } from '../context/GameContext.jsx';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
-const morningTaskLabels = {
-  shower: '샤워하기',
-  breakfast: '아침 먹기',
-  brushTeeth: '양치하기',
-  changeClothes: '옷 입기',
+const TEXT = {
+  title: '\uad50\uc0ac\uc6a9 \ub9ac\ud3ec\ud2b8',
+  description:
+    '\ud559\uc0dd\uc758 \ucd9c\uadfc \uacfc\uc815 \uae30\ub85d\uc744 \ud0c0\uc784\ub77c\uc778\uacfc \uc9c0\ub3c4 \ubb38\uc7a5\uc73c\ub85c \ud655\uc778\ud574\uc694.',
+  studentName: '\ud559\uc0dd \uc774\ub984',
+  finalResult: '\ucd5c\uc885 \uacb0\uacfc',
+  targetArrival: '\ubaa9\ud45c \ub3c4\ucc29',
+  actualArrival: '\uc2e4\uc81c \ub3c4\ucc29',
+  weather: '\uc624\ub298 \ub0a0\uc528',
+  selectedBus: '\uc120\ud0dd\ud55c \ubc84\uc2a4',
+  gotOffStop: '\ub0b4\ub9b0 \uc815\ub958\uc7a5',
+  selectedDestination: '\uc120\ud0dd\ud55c \ubaa9\uc801\uc9c0',
+  success: '\ucd9c\uadfc \uc131\uacf5',
+  late: '\uc870\uae08 \ub2a6\uc74c',
+  needsPractice: '\ub2e4\uc2dc \ud655\uc778\ud560 \uc810 \uc788\uc74c',
+  checking: '\ud655\uc778 \uc911',
+  none: '\uae30\ub85d \uc5c6\uc74c',
+  complete: '\uc644\ub8cc',
+  review: '\ud655\uc778 \ud544\uc694',
+  noRecord: '\uae30\ub85d \uc5c6\uc74c',
+  timelineTitle: '\uc804\uccb4 \uacfc\uc815 \ud0c0\uc784\ub77c\uc778',
+  busDecisionTitle: '\ubc84\uc2a4\uc815\ub958\uc7a5 \ud310\ub2e8 \uae30\ub85d',
+  rideDecisionTitle: '\ud558\ucc28 \ud310\ub2e8 \uae30\ub85d',
+  destinationTitle: '\ubaa9\uc801\uc9c0 \uc120\ud0dd \uae30\ub85d',
+  coachingTitle: '\uc790\ub3d9 \ucf54\uce6d \ubb38\uc7a5',
+  goodTitle: '\uc798\ud55c \uc810',
+  reviewTitle: '\ub2e4\uc2dc \uc5f0\uc2b5\ud560 \uc810',
+  nextTitle: '\ub2e4\uc74c \uc9c0\ub3c4 \uc81c\uc548',
+  targetBus: '200',
+  targetStop: '\ubcf8\uc564\ud558\uc774\ub9ac \uc55e',
+  targetDestination: '\ud68c\uc0ac',
+  busSuffix: '\ubc88',
+  targetMatch: '\ud655\uc778 \uc644\ub8cc',
+  targetReview: '\ub2e4\uc2dc \ud655\uc778 \ud544\uc694',
+  wait: '\uae30\ub2e4\ub9bc',
+  board: '\ud0d1\uc2b9',
+  stay: '\ub354 \uac10',
+  bell: '\ud558\ucc28\ubca8',
+  selectedPlace: '\uc120\ud0dd\ud55c \uc7a5\uc18c',
+  targetMatchLabel: '\ubaa9\ud45c \uc7a5\uc18c\uc640\uc758 \uc77c\uce58 \uc5ec\ubd80',
+  resultBack: '\uacb0\uacfc \ud654\uba74 \ub2e4\uc2dc \ubcf4\uae30',
+  restart: '\ucc98\uc74c\uc73c\ub85c \ub3cc\uc544\uac00\uae30',
 };
 
-const movementChecks = [
-  {
-    key: 'hasStartedCommute',
-    label: '집에서 출발',
-  },
-  {
-    key: 'hasCompletedBusRide',
-    label: '버스 이동 확인',
-  },
-  {
-    key: 'hasReachedDestinationArea',
-    label: '회사 근처 도착',
-  },
-  {
-    key: 'hasSeenResultCutscene',
-    label: '결과 장면 확인',
-  },
-];
-
-function displayValue(value) {
-  return value || '확인 중';
-}
+const TIMELINE_LABELS = {
+  studentSelect: '\ud559\uc0dd \uc120\ud0dd',
+  commuteInfo: '\ucd9c\uadfc \uc815\ubcf4 \ud655\uc778',
+  aiPlan: 'AI \uacc4\ud68d \ud655\uc778',
+  eveningPrep: '\uc804\ub0a0 \uc900\ube44',
+  alarm: '\uc54c\ub78c \uc124\uc815',
+  wakeUp: '\uae30\uc0c1 \uc120\ud0dd',
+  morningPrep: '\uc544\uce68 \uc900\ube44',
+  bagPacking: '\uac00\ubc29 \ucc59\uae30\uae30',
+  commuteStart: '\uc815\ub958\uc7a5 \uc774\ub3d9',
+  busStop: '\ubc84\uc2a4 \ub3c4\ucc29 \ud310\ub2e8',
+  busRide: '\ubc84\uc2a4 \ud0d1\uc2b9',
+  getOff: '\ud558\ucc28 \ud310\ub2e8',
+  destination: '\ubaa9\uc801\uc9c0 \uc120\ud0dd',
+  result: '\ucd5c\uc885 \uacb0\uacfc',
+};
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
 }
 
+function displayValue(value) {
+  return value || TEXT.checking;
+}
+
+function normalizeBus(value) {
+  if (value === null || value === undefined) return '';
+  return String(value).replace(TEXT.busSuffix, '').trim();
+}
+
+function normalizeItemId(item) {
+  if (typeof item === 'string') return item;
+  return item?.id ?? item?.name ?? item?.label ?? '';
+}
+
+function getItemLabel(item) {
+  if (typeof item === 'string') return item;
+  return item?.name ?? item?.label ?? item?.id ?? '';
+}
+
 function getMissingItems(requiredItems, selectedItems) {
-  return requiredItems.filter((item) => !selectedItems.includes(item));
+  const selectedIds = new Set(asArray(selectedItems).map(normalizeItemId));
+
+  return asArray(requiredItems).filter((item) => {
+    const id = normalizeItemId(item);
+    return id && !selectedIds.has(id);
+  });
 }
 
-function getExtraItems(requiredItems, selectedItems) {
-  return selectedItems.filter((item) => !requiredItems.includes(item));
-}
+function createFallbackSummary({ aiPlanInput, aiPlanResult, studentChoices }) {
+  const busOk = normalizeBus(studentChoices?.selectedBusNumber) === TEXT.targetBus;
+  const stopOk = studentChoices?.gotOffAtStopName === TEXT.targetStop;
+  const destinationOk =
+    studentChoices?.selectedDestinationId === 'company' ||
+    studentChoices?.selectedDestinationName === TEXT.targetDestination;
+  const timePenaltyMinutes = Number(studentChoices?.wakeUpDelayMinutes ?? 0);
+  const missingItems = getMissingItems(
+    aiPlanResult?.requiredItems,
+    studentChoices?.selectedItems,
+  ).map(getItemLabel);
+  const reasonTags = [];
 
-function createGuidancePoints({
-  missingItems,
-  extraItems,
-  busMatched,
-  morningTaskCount,
-  movementComplete,
-}) {
-  const points = [];
+  if (!busOk) reasonTags.push('bus');
+  if (!stopOk) reasonTags.push('stop');
+  if (!destinationOk) reasonTags.push('destination');
+  if (timePenaltyMinutes >= 10) reasonTags.push('delay');
+  if (missingItems.length > 0) reasonTags.push('missingItems');
 
-  if (missingItems.length > 0) {
-    points.push('준비물 확인 단계에서 빠진 물건을 다시 지도하면 좋습니다.');
+  let resultType = 'needsPractice';
+  if (busOk && stopOk && destinationOk && timePenaltyMinutes <= 0) {
+    resultType = 'success';
+  } else if (busOk && stopOk && destinationOk && timePenaltyMinutes > 0) {
+    resultType = 'late';
   }
 
-  if (extraItems.length > 0) {
-    points.push(
-      '필요하지 않은 물건을 함께 선택했습니다. 필요한 물건과 선택 물건을 구분하는 연습이 필요합니다.',
-    );
-  }
-
-  if (!busMatched) {
-    points.push('버스 번호를 확인하고 선택하는 연습이 필요합니다.');
-  }
-
-  if (morningTaskCount < 4) {
-    points.push('아침 준비 활동 순서를 다시 확인하는 지도가 필요합니다.');
-  }
-
-  if (!movementComplete) {
-    points.push('출근 이동 순서를 다시 연결해 보는 연습이 필요합니다.');
-  }
-
-  if (points.length === 0) {
-    points.push('전체 출근 흐름을 안정적으로 따라갔습니다.');
-  }
-
-  return points;
-}
-
-function ChipList({ items, emptyText, tone = 'slate' }) {
-  const displayItems = items.length > 0 ? items : [emptyText];
-  const toneClasses = {
-    slate: 'border-slate-200 bg-slate-50 text-slate-900',
-    sky: 'border-sky-100 bg-sky-50 text-slate-900',
-    amber: 'border-amber-100 bg-amber-50 text-slate-900',
-    emerald: 'border-emerald-100 bg-emerald-50 text-slate-900',
+  return {
+    resultType,
+    displayTitle:
+      resultType === 'success'
+        ? TEXT.success
+        : resultType === 'late'
+          ? TEXT.late
+          : TEXT.needsPractice,
+    actualArrivalTime:
+      aiPlanResult?.expectedArrivalTime ?? aiPlanInput?.arrivalTime ?? null,
+    timePenaltyMinutes,
+    reasonTags,
+    busOk,
+    stopOk,
+    destinationOk,
+    missingItems,
+    strengths: [],
+    reviewPoints: [],
   };
-  const classes = toneClasses[tone] ?? toneClasses.slate;
-
-  return (
-    <div className="mt-4 flex flex-wrap gap-3">
-      {displayItems.map((item) => (
-        <span
-          key={item}
-          className={`rounded-2xl border px-5 py-3 text-xl font-bold ${classes}`}
-        >
-          {item}
-        </span>
-      ))}
-    </div>
-  );
 }
 
-function ReportList({ items, emptyText }) {
+function createReportData(state) {
+  const { selectedStudent, aiPlanInput, aiPlanResult, studentChoices } = state;
+  const fallback = createFallbackSummary({
+    aiPlanInput,
+    aiPlanResult,
+    studentChoices,
+  });
+  const summary = {
+    ...fallback,
+    ...(state.resultSummary ?? {}),
+  };
+
+  return {
+    studentName: selectedStudent?.name ?? TEXT.checking,
+    summary,
+    busOk: summary.busOk ?? fallback.busOk,
+    stopOk: summary.stopOk ?? fallback.stopOk,
+    destinationOk: summary.destinationOk ?? fallback.destinationOk,
+    delayMinutes:
+      summary.timePenaltyMinutes ?? Number(studentChoices?.wakeUpDelayMinutes ?? 0),
+    missingItems: summary.missingItems ?? fallback.missingItems,
+  };
+}
+
+function getStatus(condition, hasRecord = true) {
+  if (!hasRecord) return 'none';
+  return condition ? 'complete' : 'review';
+}
+
+function createTimeline({ state, report }) {
+  const { aiPlanInput, aiPlanResult, studentChoices } = state;
+  const selectedItems = asArray(studentChoices?.selectedItems);
+  const requiredItems = asArray(aiPlanResult?.requiredItems);
+  const missingItems = report.missingItems ?? [];
+  const busDecisions = asArray(studentChoices?.busStopDecisions);
+  const rideDecisions = asArray(studentChoices?.busRideDecisions);
+  const destinationAttempts = asArray(studentChoices?.destinationAttempts);
+
+  return [
+    {
+      label: TIMELINE_LABELS.studentSelect,
+      status: getStatus(Boolean(state.selectedStudent)),
+      detail: report.studentName,
+    },
+    {
+      label: TIMELINE_LABELS.commuteInfo,
+      status: getStatus(Boolean(aiPlanInput?.arrivalTime || aiPlanInput?.weather)),
+      detail: displayValue(aiPlanInput?.arrivalTime ?? aiPlanInput?.weather),
+    },
+    {
+      label: TIMELINE_LABELS.aiPlan,
+      status: getStatus(Boolean(aiPlanResult?.busNumber)),
+      detail: aiPlanResult?.busNumber
+        ? `${aiPlanResult.busNumber}${TEXT.busSuffix}`
+        : TEXT.noRecord,
+    },
+    {
+      label: TIMELINE_LABELS.eveningPrep,
+      status: getStatus(Boolean(studentChoices?.eveningBagChecked)),
+      detail: studentChoices?.eveningBagChecked ? TEXT.complete : TEXT.noRecord,
+    },
+    {
+      label: TIMELINE_LABELS.alarm,
+      status: getStatus(Boolean(studentChoices?.alarmChecked)),
+      detail: displayValue(studentChoices?.selectedAlarmTime),
+    },
+    {
+      label: TIMELINE_LABELS.wakeUp,
+      status: getStatus(report.delayMinutes < 10, Boolean(studentChoices?.wakeUpChoice)),
+      detail:
+        report.delayMinutes >= 10
+          ? `+${report.delayMinutes}m`
+          : displayValue(studentChoices?.wakeUpChoice),
+    },
+    {
+      label: TIMELINE_LABELS.morningPrep,
+      status: getStatus(asArray(studentChoices?.completedMorningTasks).length >= 4),
+      detail: `${asArray(studentChoices?.completedMorningTasks).length} / 4`,
+    },
+    {
+      label: TIMELINE_LABELS.bagPacking,
+      status: getStatus(missingItems.length === 0, requiredItems.length > 0 || selectedItems.length > 0),
+      detail:
+        missingItems.length > 0 ? missingItems.join(', ') : `${selectedItems.length}`,
+    },
+    {
+      label: TIMELINE_LABELS.commuteStart,
+      status: getStatus(Boolean(studentChoices?.hasStartedCommute)),
+      detail: studentChoices?.hasStartedCommute ? TEXT.complete : TEXT.noRecord,
+    },
+    {
+      label: TIMELINE_LABELS.busStop,
+      status: getStatus(report.busOk, busDecisions.length > 0),
+      detail: displayValue(studentChoices?.selectedBusNumber),
+    },
+    {
+      label: TIMELINE_LABELS.busRide,
+      status: getStatus(Boolean(studentChoices?.hasCompletedBusRide)),
+      detail: studentChoices?.hasCompletedBusRide ? TEXT.complete : TEXT.noRecord,
+    },
+    {
+      label: TIMELINE_LABELS.getOff,
+      status: getStatus(report.stopOk, rideDecisions.length > 0),
+      detail: displayValue(studentChoices?.gotOffAtStopName),
+    },
+    {
+      label: TIMELINE_LABELS.destination,
+      status: getStatus(report.destinationOk, destinationAttempts.length > 0),
+      detail: displayValue(studentChoices?.selectedDestinationName),
+    },
+    {
+      label: TIMELINE_LABELS.result,
+      status: report.summary.resultType === 'success' ? 'complete' : 'review',
+      detail: report.summary.displayTitle ?? TEXT.needsPractice,
+    },
+  ];
+}
+
+function createCoaching({ report, studentChoices }) {
+  const good = [...asArray(report.summary.strengths)];
+  const review = [...asArray(report.summary.reviewPoints)];
+  const next = [];
+
+  if (report.busOk) {
+    good.push('\ubc84\uc2a4 \ubc88\ud638\ub97c \ud655\uc778\ud558\uba70 \uc774\ub3d9\ud560 \uc218 \uc788\uc5c8\uc2b5\ub2c8\ub2e4.');
+  } else {
+    review.push('\ubc84\uc2a4 \ubc88\ud638 \ud655\uc778\uc744 \ud55c \ubc88 \ub354 \uc5f0\uc2b5\ud558\uba74 \uc88b\uaca0\uc2b5\ub2c8\ub2e4.');
+    next.push('\ub2e4\uc74c \uc218\uc5c5\uc5d0\uc11c\ub294 \ubc84\uc2a4 \ubc88\ud638\ub97c \uc18c\ub9ac \ub0b4\uc5b4 \ud655\uc778\ud55c \ub4a4 \uc120\ud0dd\ud558\ub3c4\ub85d \uc9c0\ub3c4\ud574 \uc8fc\uc138\uc694.');
+  }
+
+  if (report.stopOk) {
+    good.push('\uc815\ub958\uc7a5 \uc774\ub984\uc744 \ubcf4\uace0 \ud558\ucc28 \uc2dc\uc810\uc744 \ud310\ub2e8\ud588\uc2b5\ub2c8\ub2e4.');
+  } else {
+    review.push('\ub0b4\ub9b4 \uc815\ub958\uc7a5\uacfc \ud604\uc7ac \uc815\ub958\uc7a5\uc744 \ube44\uad50\ud558\ub294 \uc5f0\uc2b5\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.');
+    next.push('\uc815\ub958\uc7a5 \uc774\ub984\uc744 \ub4e3\uace0 \ubaa9\ud45c \uc815\ub958\uc7a5\uacfc \uac19\uc740\uc9c0 \ube44\uad50\ud558\ub294 \uc5f0\uc2b5\uc744 \ud574 \uc8fc\uc138\uc694.');
+  }
+
+  if (report.destinationOk) {
+    good.push('\ucd5c\uc885 \ubaa9\uc801\uc9c0\ub97c \uc120\ud0dd\ud558\ub294 \ud65c\ub3d9\uc5d0 \ucc38\uc5ec\ud588\uc2b5\ub2c8\ub2e4.');
+  } else {
+    review.push('\ubaa9\uc801\uc9c0 \uc8fc\ubcc0 \uc7a5\uc18c\ub97c \uad6c\ubd84\ud558\ub294 \uc5f0\uc2b5\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.');
+    next.push('\ud68c\uc0ac, \ub9c8\ud2b8, \ud559\uad50, \uc8fc\ubbfc\uc13c\ud130 \uc0ac\uc9c4 \uce74\ub4dc\ub97c \ud65c\uc6a9\ud574 \ubaa9\uc801\uc9c0 \uad6c\ubd84 \ud65c\ub3d9\uc744 \uc774\uc5b4\uac00\uba74 \uc88b\uc2b5\ub2c8\ub2e4.');
+  }
+
+  if (Number(studentChoices?.wakeUpDelayMinutes ?? 0) >= 10) {
+    review.push('\uc544\uce68 \uae30\uc0c1 \ud6c4 \ubc14\ub85c \uc900\ube44\ub97c \uc2dc\uc791\ud558\ub294 \uc5f0\uc2b5\uc774 \ud544\uc694\ud569\ub2c8\ub2e4.');
+    next.push('\uc54c\ub78c \ud6c4 \ubc14\ub85c \uc77c\uc5b4\ub098\ub294 \uc120\ud0dd\uacfc \ucd9c\uadfc \uc2dc\uac04\uc758 \uad00\uacc4\ub97c \ud568\uaed8 \uc774\uc57c\uae30\ud574 \uc8fc\uc138\uc694.');
+  } else {
+    good.push('\uc54c\ub78c \ud6c4 \uc544\uce68 \uc900\ube44 \ub2e8\uacc4\uae4c\uc9c0 \uc774\uc5b4\uc11c \uc218\ud589\ud588\uc2b5\ub2c8\ub2e4.');
+  }
+
+  if (asArray(report.missingItems).length > 0) {
+    review.push('\ub0a0\uc528\uc5d0 \ub9de\ub294 \uc900\ube44\ubb3c \ud655\uc778\uc744 \ubc18\ubcf5\ud558\uba74 \uc88b\uaca0\uc2b5\ub2c8\ub2e4.');
+    next.push('\uc900\ube44\ubb3c \uce74\ub4dc\ub97c \uc624\ub298 \ub0a0\uc528\uc640 \uc5f0\uacb0\ud574 \uc120\ud0dd\ud558\ub294 \ud65c\ub3d9\uc744 \uc9c0\ub3c4\ud574 \uc8fc\uc138\uc694.');
+  }
+
+  if (next.length === 0) {
+    next.push('\ub2e4\uc74c \uc218\uc5c5\uc5d0\uc11c\ub294 \uac19\uc740 \ud750\ub984\uc744 \ub354 \uc790\uc5f0\uc2a4\ub7fd\uac8c \ub9d0\ub85c \uc124\uba85\ud558\uba70 \uc5f0\uc2b5\ud574 \uc8fc\uc138\uc694.');
+  }
+
+  return {
+    good: [...new Set(good)].slice(0, 5),
+    review: [...new Set(review)].slice(0, 5),
+    next: [...new Set(next)].slice(0, 5),
+  };
+}
+
+function statusClasses(status) {
+  if (status === 'complete') return 'border-emerald-200 bg-emerald-50 text-emerald-800';
+  if (status === 'review') return 'border-amber-200 bg-amber-50 text-amber-800';
+  return 'border-slate-200 bg-slate-50 text-slate-600';
+}
+
+function statusLabel(status) {
+  if (status === 'complete') return TEXT.complete;
+  if (status === 'review') return TEXT.review;
+  return TEXT.noRecord;
+}
+
+function SimpleList({ items, emptyText }) {
   const displayItems = items.length > 0 ? items : [emptyText];
 
   return (
@@ -117,7 +331,7 @@ function ReportList({ items, emptyText }) {
       {displayItems.map((item) => (
         <li
           key={item}
-          className="rounded-[1.5rem] bg-slate-50 px-5 py-4 text-xl font-bold leading-8 text-slate-900"
+          className="rounded-[1.25rem] bg-white px-5 py-4 text-lg font-bold leading-7 text-slate-800 shadow-sm"
         >
           {item}
         </li>
@@ -126,104 +340,57 @@ function ReportList({ items, emptyText }) {
   );
 }
 
-export default function TeacherReport() {
+function TeacherReport() {
   const { state, dispatch, goToScreen } = useGame();
-  const { aiPlanInput, aiPlanResult, studentChoices, resultSummary } = state;
-  const studentName = state.selectedStudent?.name ?? '학생';
-  const requiredItems = asArray(aiPlanResult?.requiredItems);
-  const selectedItems = asArray(studentChoices?.selectedItems);
-  const completedMorningTasks = asArray(studentChoices?.completedMorningTasks);
-  const missingItems = getMissingItems(requiredItems, selectedItems);
-  const extraItems = getExtraItems(requiredItems, selectedItems);
-  const busMatched = Boolean(
-    studentChoices?.selectedBusNumber &&
-      aiPlanResult?.busNumber &&
-      studentChoices.selectedBusNumber === aiPlanResult.busNumber,
-  );
-  const morningTaskCount = completedMorningTasks.length;
-  const movementComplete = movementChecks.every((item) =>
-    Boolean(studentChoices?.[item.key]),
-  );
-  const guidancePoints = createGuidancePoints({
-    missingItems,
-    extraItems,
-    busMatched,
-    morningTaskCount,
-    movementComplete,
-  });
+  const { aiPlanInput, aiPlanResult, studentChoices } = state;
+  const report = createReportData(state);
+  const timeline = createTimeline({ state, report });
+  const coaching = createCoaching({ report, studentChoices });
+  const busStopDecisions = asArray(studentChoices?.busStopDecisions);
+  const busRideDecisions = asArray(studentChoices?.busRideDecisions);
+  const destinationAttempts = asArray(studentChoices?.destinationAttempts);
+  const resultTitle =
+    report.summary.resultType === 'success'
+      ? TEXT.success
+      : report.summary.resultType === 'late'
+        ? TEXT.late
+        : TEXT.needsPractice;
 
-  const planCards = [
+  const summaryCards = [
+    { title: TEXT.studentName, value: report.studentName },
+    { title: TEXT.finalResult, value: resultTitle },
+    { title: TEXT.targetArrival, value: displayValue(aiPlanInput?.arrivalTime) },
     {
-      title: '목표 도착',
-      value: displayValue(aiPlanInput?.arrivalTime),
+      title: TEXT.actualArrival,
+      value:
+        report.summary.actualArrivalTime ??
+        (report.delayMinutes > 0 ? `+${report.delayMinutes}m` : displayValue(aiPlanResult?.expectedArrivalTime)),
     },
+    { title: TEXT.weather, value: displayValue(aiPlanInput?.weather ?? state.weather) },
     {
-      title: '추천 기상',
-      value: displayValue(aiPlanResult?.recommendedWakeUpTime),
+      title: TEXT.selectedBus,
+      value: studentChoices?.selectedBusNumber
+        ? `${normalizeBus(studentChoices.selectedBusNumber)}${TEXT.busSuffix}`
+        : TEXT.checking,
     },
+    { title: TEXT.gotOffStop, value: displayValue(studentChoices?.gotOffAtStopName) },
     {
-      title: '기록된 기상',
-      value: displayValue(studentChoices?.selectedAlarmTime),
-    },
-    {
-      title: '추천 출발',
-      value: displayValue(aiPlanResult?.recommendedLeaveHomeTime),
-    },
-    {
-      title: '예상 도착',
-      value: displayValue(aiPlanResult?.expectedArrivalTime),
-    },
-    {
-      title: '날씨',
-      value: displayValue(aiPlanInput?.weather),
-    },
-    {
-      title: '이동 수단',
-      value: displayValue(aiPlanInput?.transport ?? 'bus'),
-    },
-    {
-      title: '결과 요약',
-      value: resultSummary?.resultTitle ?? '확인 중',
+      title: TEXT.selectedDestination,
+      value: displayValue(studentChoices?.selectedDestinationName),
     },
   ];
 
   return (
-    <section className="w-full">
-      <ScreenHeader
-        studentName={studentName}
-        title="교사용 리포트"
-        description="학생의 출근 시뮬레이션 선택 흐름을 확인해요."
-        targetArrivalTime={aiPlanInput?.arrivalTime}
-      />
+    <div className="space-y-6">
+      <header className="rounded-[2rem] border-4 border-amber-200 bg-white/90 p-6 text-center shadow-xl">
+        <h1 className="text-4xl font-black text-slate-900">{TEXT.title}</h1>
+        <p className="mt-2 text-xl font-bold text-slate-600">
+          {TEXT.description}
+        </p>
+      </header>
 
-      <InfoCard className="mb-6">
-        <div className="grid gap-5 lg:grid-cols-3">
-          <div>
-            <p className="text-lg font-semibold text-slate-500">학생 이름</p>
-            <p className="mt-2 text-3xl font-extrabold text-slate-950">
-              {studentName}
-            </p>
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-slate-500">결과 요약</p>
-            <p className="mt-2 text-3xl font-extrabold text-slate-950">
-              {resultSummary?.resultTitle ?? '결과 요약 확인 중'}
-            </p>
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-slate-500">
-              다음 지도 포인트
-            </p>
-            <p className="mt-2 text-2xl font-bold leading-8 text-slate-950">
-              {resultSummary?.nextStep ??
-                '출근 흐름을 함께 확인해 주세요.'}
-            </p>
-          </div>
-        </div>
-      </InfoCard>
-
-      <div className="grid gap-5 xl:grid-cols-4">
-        {planCards.map((card) => (
+      <section className="grid gap-4 xl:grid-cols-4">
+        {summaryCards.map((card) => (
           <InfoCard
             key={card.title}
             title={card.title}
@@ -231,189 +398,116 @@ export default function TeacherReport() {
             highlight
           />
         ))}
-      </div>
+      </section>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <InfoCard>
-          <p className="text-3xl font-extrabold text-slate-950">
-            준비물 확인
-          </p>
-          <div className="mt-5 space-y-5">
-            <div>
-              <p className="text-xl font-bold text-slate-600">추천 준비물</p>
-              <ChipList
-                items={requiredItems}
-                emptyText="추천 준비물 없음"
-                tone="sky"
-              />
-            </div>
-            <div>
-              <p className="text-xl font-bold text-slate-600">
-                학생이 챙긴 물건
+      <section className="rounded-[2rem] border-4 border-sky-100 bg-white/90 p-6 shadow-xl">
+        <h2 className="text-3xl font-black text-slate-950">
+          {TEXT.timelineTitle}
+        </h2>
+        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {timeline.map((item, index) => (
+            <div
+              key={`${item.label}-${index}`}
+              className={`rounded-[1.5rem] border-4 p-4 shadow-sm ${statusClasses(item.status)}`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-black">
+                  {index + 1}
+                </span>
+                <span className="rounded-full bg-white/80 px-3 py-1 text-sm font-black">
+                  {statusLabel(item.status)}
+                </span>
+              </div>
+              <p className="mt-4 text-xl font-black text-slate-950">
+                {item.label}
               </p>
-              <ChipList
-                items={selectedItems}
-                emptyText="선택한 물건 없음"
-                tone="emerald"
-              />
-            </div>
-            <div>
-              <p className="text-xl font-bold text-slate-600">빠진 물건</p>
-              <ChipList
-                items={missingItems}
-                emptyText="빠진 물건 없음"
-                tone="amber"
-              />
-            </div>
-            <div>
-              <p className="text-xl font-bold text-slate-600">
-                추가로 선택한 물건
+              <p className="mt-2 break-keep text-base font-bold text-slate-700">
+                {item.detail}
               </p>
-              <ChipList
-                items={extraItems}
-                emptyText="추가 선택 물건 없음"
-              />
             </div>
-          </div>
-        </InfoCard>
+          ))}
+        </div>
+      </section>
 
-        <InfoCard>
-          <p className="text-3xl font-extrabold text-slate-950">
-            버스 선택
-          </p>
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.75rem] bg-sky-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">
-                AI 추천 버스
-              </p>
-              <p className="mt-2 text-3xl font-extrabold text-slate-950">
-                {aiPlanResult?.busNumber
-                  ? `${aiPlanResult.busNumber}번`
-                  : '확인 중'}
-              </p>
-            </div>
-            <div className="rounded-[1.75rem] bg-sky-50 p-5">
-              <p className="text-lg font-semibold text-slate-500">
-                학생 선택 버스
-              </p>
-              <p className="mt-2 text-3xl font-extrabold text-slate-950">
-                {studentChoices?.selectedBusNumber
-                  ? `${studentChoices.selectedBusNumber}번`
-                  : '확인 중'}
-              </p>
-            </div>
-          </div>
-          <p className="mt-5 rounded-[1.75rem] bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-950">
-            {busMatched
-              ? '추천 버스와 같은 번호를 선택했습니다.'
-              : '버스 번호를 다시 확인하는 연습이 필요합니다.'}
-          </p>
-        </InfoCard>
-      </div>
-
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <InfoCard>
-          <p className="text-3xl font-extrabold text-slate-950">
-            아침 준비 확인
-          </p>
-          <p className="mt-4 text-4xl font-extrabold text-slate-950">
-            {morningTaskCount} / 4
-          </p>
-          <ChipList
-            items={completedMorningTasks.map(
-              (taskId) => morningTaskLabels[taskId] ?? taskId,
+      <section className="grid gap-5 lg:grid-cols-3">
+        <div className="rounded-[2rem] border-4 border-blue-100 bg-blue-50 p-6 shadow-xl">
+          <h2 className="text-2xl font-black text-slate-950">
+            {TEXT.busDecisionTitle}
+          </h2>
+          <SimpleList
+            items={busStopDecisions.map(
+              (decision) =>
+                `${decision.busNumber}${TEXT.busSuffix}: ${
+                  decision.action === 'board' ? TEXT.board : TEXT.wait
+                }`,
             )}
-            emptyText="완료 기록 없음"
-            tone="emerald"
+            emptyText={TEXT.noRecord}
           />
-        </InfoCard>
+        </div>
 
-        <InfoCard>
-          <p className="text-3xl font-extrabold text-slate-950">
-            이동 흐름 확인
-          </p>
-          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-            {movementChecks.map((item) => {
-              const isChecked = Boolean(studentChoices?.[item.key]);
+        <div className="rounded-[2rem] border-4 border-emerald-100 bg-emerald-50 p-6 shadow-xl">
+          <h2 className="text-2xl font-black text-slate-950">
+            {TEXT.rideDecisionTitle}
+          </h2>
+          <SimpleList
+            items={busRideDecisions.map(
+              (decision) =>
+                `${decision.stopName}: ${
+                  decision.action === 'bell' ? TEXT.bell : TEXT.stay
+                }`,
+            )}
+            emptyText={TEXT.noRecord}
+          />
+        </div>
 
-              return (
-                <div
-                  key={item.key}
-                  className={`rounded-[1.5rem] border px-5 py-4 ${
-                    isChecked
-                      ? 'border-emerald-100 bg-emerald-50'
-                      : 'border-amber-100 bg-amber-50'
-                  }`}
-                >
-                  <p className="text-xl font-bold text-slate-950">
-                    {item.label}
-                  </p>
-                  <p className="mt-2 text-2xl font-extrabold text-slate-700">
-                    {isChecked ? '확인됨' : '확인 필요'}
-                  </p>
-                </div>
-              );
-            })}
+        <div className="rounded-[2rem] border-4 border-amber-100 bg-amber-50 p-6 shadow-xl">
+          <h2 className="text-2xl font-black text-slate-950">
+            {TEXT.destinationTitle}
+          </h2>
+          <SimpleList
+            items={destinationAttempts.map(
+              (attempt) =>
+                `${TEXT.selectedPlace}: ${attempt.destinationName} / ${
+                  attempt.isTargetDestination ? TEXT.targetMatch : TEXT.targetReview
+                }`,
+            )}
+            emptyText={TEXT.noRecord}
+          />
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border-4 border-purple-100 bg-white/90 p-6 shadow-xl">
+        <h2 className="text-3xl font-black text-slate-950">
+          {TEXT.coachingTitle}
+        </h2>
+        <div className="mt-5 grid gap-5 lg:grid-cols-3">
+          <div className="rounded-[1.5rem] bg-emerald-50 p-5">
+            <h3 className="text-2xl font-black text-slate-950">
+              {TEXT.goodTitle}
+            </h3>
+            <SimpleList items={coaching.good} emptyText={TEXT.noRecord} />
           </div>
-        </InfoCard>
-      </div>
+          <div className="rounded-[1.5rem] bg-amber-50 p-5">
+            <h3 className="text-2xl font-black text-slate-950">
+              {TEXT.reviewTitle}
+            </h3>
+            <SimpleList items={coaching.review} emptyText={TEXT.noRecord} />
+          </div>
+          <div className="rounded-[1.5rem] bg-sky-50 p-5">
+            <h3 className="text-2xl font-black text-slate-950">
+              {TEXT.nextTitle}
+            </h3>
+            <SimpleList items={coaching.next} emptyText={TEXT.noRecord} />
+          </div>
+        </div>
+      </section>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <InfoCard>
-          <p className="text-3xl font-extrabold text-slate-950">
-            학생 피드백 요약
-          </p>
-          {resultSummary ? (
-            <div className="mt-5 grid gap-5">
-              <div>
-                <p className="text-xl font-bold text-slate-600">잘한 점</p>
-                <ReportList
-                  items={asArray(resultSummary.strengths)}
-                  emptyText="학생의 잘한 점 기록이 없습니다."
-                />
-              </div>
-              <div>
-                <p className="text-xl font-bold text-slate-600">
-                  다시 확인할 점
-                </p>
-                <ReportList
-                  items={asArray(resultSummary.reviewPoints)}
-                  emptyText="다시 확인할 점이 많지 않습니다."
-                />
-              </div>
-              <div>
-                <p className="text-xl font-bold text-slate-600">
-                  내일 해볼 점
-                </p>
-                <p className="mt-4 rounded-[1.5rem] bg-sky-50 px-5 py-4 text-xl font-bold leading-8 text-slate-950">
-                  {resultSummary.nextStep}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <p className="mt-5 rounded-[1.5rem] bg-slate-50 px-5 py-4 text-2xl font-bold leading-8 text-slate-900">
-              학생 결과 요약이 아직 저장되지 않았습니다.
-            </p>
-          )}
-        </InfoCard>
-
-        <InfoCard>
-          <p className="text-3xl font-extrabold text-slate-950">
-            교사용 지도 포인트
-          </p>
-          <ReportList
-            items={guidancePoints}
-            emptyText="전체 출근 흐름을 안정적으로 따라갔습니다."
-          />
-        </InfoCard>
-      </div>
-
-      <div className="mt-8 flex flex-col justify-end gap-4 sm:flex-row">
+      <div className="flex flex-col justify-end gap-4 sm:flex-row">
         <PrimaryButton
           variant="secondary"
           onClick={() => goToScreen(SCREEN_IDS.resultScreen)}
         >
-          결과 화면 다시 보기
+          {TEXT.resultBack}
         </PrimaryButton>
         <PrimaryButton
           onClick={() =>
@@ -422,9 +516,11 @@ export default function TeacherReport() {
             })
           }
         >
-          처음으로 돌아가기
+          {TEXT.restart}
         </PrimaryButton>
       </div>
-    </section>
+    </div>
   );
 }
+
+export default TeacherReport;

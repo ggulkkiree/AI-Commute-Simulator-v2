@@ -1,18 +1,11 @@
-import InfoCard from '../components/InfoCard.jsx';
 import PrimaryButton from '../components/PrimaryButton.jsx';
 import ScreenHeader from '../components/ScreenHeader.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
 import { useGame } from '../context/GameContext.jsx';
+import { bagItemEmoji } from '../data/bagItems.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
-const itemEmoji = {
-  교통카드: '💳',
-  스마트폰: '📱',
-  물병: '💧',
-  우산: '☂️',
-  손선풍기: '🌀',
-  겉옷: '🧥',
-};
+const mascotImage = '/images/mascot/ai_robot_guide.png';
 
 function hasRequiredItems(aiPlanResult) {
   return (
@@ -26,8 +19,7 @@ export default function EveningBagCheck() {
   const { aiPlanInput, aiPlanResult } = state;
   const studentName = state.selectedStudent?.name;
   const requiredItems = aiPlanResult.requiredItems ?? [];
-  const canShowItems = hasRequiredItems(aiPlanResult);
-  const weatherText = aiPlanInput?.weather ?? '내일 날씨';
+  const weatherText = aiPlanInput?.weather ?? state.weather ?? '오늘 날씨';
 
   const handleConfirmBag = () => {
     dispatch({
@@ -40,30 +32,31 @@ export default function EveningBagCheck() {
     goToScreen(SCREEN_IDS.alarmSetup);
   };
 
-  if (!canShowItems) {
+  if (!hasRequiredItems(aiPlanResult)) {
     return (
       <section className="w-full">
         <ScreenHeader
           studentName={studentName}
-          title="내일 가방 확인하기"
-          description="먼저 AI 출근 계획을 확인해 주세요."
+          eyebrow="전날 준비"
+          title="내일 가방을 확인해요"
+          description="먼저 AI 추천 계획을 확인해 주세요."
         />
 
-        <InfoCard className="mx-auto max-w-3xl text-center">
-          <p className="text-3xl font-bold text-slate-950">
-            챙길 물건 정보가 아직 없어요
+        <div className="mx-auto max-w-3xl rounded-[2rem] border-4 border-amber-200 bg-white/95 p-8 text-center shadow-xl">
+          <p className="text-3xl font-extrabold text-slate-950">
+            확인할 준비물이 아직 없어요
           </p>
-          <p className="mt-4 text-2xl leading-9 text-slate-600">
-            AI 출근 계획을 확인한 뒤 필요한 물건을 볼 수 있어요.
+          <p className="mt-4 text-2xl font-bold leading-9 text-slate-600">
+            AI 추천 계획을 본 뒤 내일 필요한 물건을 확인할 수 있어요.
           </p>
           <PrimaryButton
             variant="secondary"
             className="mt-8"
             onClick={() => goToScreen(SCREEN_IDS.aiPlanResult)}
           >
-            AI 계획 화면으로 돌아가기
+            AI 계획 다시 보기
           </PrimaryButton>
-        </InfoCard>
+        </div>
       </section>
     );
   }
@@ -72,70 +65,105 @@ export default function EveningBagCheck() {
     <section className="w-full">
       <ScreenHeader
         studentName={studentName}
-        title="내일 가방 확인하기"
-        description="내일 필요한 물건을 미리 확인해요."
+        eyebrow="전날 준비"
+        title="내일 필요한 물건을 미리 확인해요"
+        description="지금은 기억하는 시간이고, 아침에는 실제로 가방에 넣어요."
         targetArrivalTime={aiPlanInput?.arrivalTime}
       />
 
-      <InfoCard className="mb-6">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
-              AI가 알려준 준비물이에요
-            </p>
-            <p className="mt-3 text-2xl font-semibold leading-9 text-slate-600">
-              {weatherText}에 맞춰 내일 필요한 물건을 미리 확인해요.
-            </p>
-          </div>
-          <div className="rounded-[1.75rem] border-2 border-amber-100 bg-amber-50 px-6 py-4 text-2xl font-extrabold text-amber-800">
-            오늘 밤 확인 · 내일 아침 챙기기
-          </div>
-        </div>
-      </InfoCard>
+      <div className="relative overflow-hidden rounded-[2.5rem] border-4 border-amber-200 bg-gradient-to-br from-amber-100 via-orange-50 to-sky-100 p-5 shadow-2xl lg:p-7">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_76%_12%,rgba(255,255,255,0.8),transparent_18%),radial-gradient(circle_at_20%_80%,rgba(14,165,233,0.18),transparent_30%)]" />
 
-      <InfoCard>
-        <div className="flex flex-wrap gap-4">
-          {requiredItems.map((item) => (
-            <div
-              key={item}
-              className="flex min-w-56 flex-1 items-center gap-4 rounded-[1.75rem] border-2 border-sky-100 bg-sky-50/80 px-5 py-5 shadow-sm"
-            >
-              <span
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-white text-4xl shadow-inner"
-                aria-hidden="true"
-              >
-                {itemEmoji[item] ?? '🎒'}
-              </span>
-              <span className="text-3xl font-extrabold text-slate-950">
-                {item}
-              </span>
+        <div className="relative grid gap-6 lg:grid-cols-[0.28fr_0.72fr]">
+          <aside className="flex flex-col justify-between rounded-[2rem] border-4 border-sky-300 bg-gradient-to-b from-sky-100 to-cyan-200 p-5 shadow-xl">
+            <div className="rounded-[1.7rem] bg-white/95 p-5 shadow-inner">
+              <p className="text-2xl font-extrabold text-sky-800">
+                아침에 넣을 물건을 오늘 미리 기억해요.
+              </p>
+              <p className="mt-3 text-xl font-bold leading-8 text-slate-700">
+                필요한 물건만 차분히 확인하면 돼요.
+              </p>
             </div>
-          ))}
-        </div>
-      </InfoCard>
+            <div className="mt-6 flex h-56 items-end justify-center">
+              <img
+                src={mascotImage}
+                alt="AI 안내 로봇"
+                className="h-full w-full object-contain"
+              />
+            </div>
+          </aside>
 
-      <InfoCard className="mt-6">
-        <p className="text-3xl font-bold text-slate-950">기억해요</p>
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl bg-amber-50 p-5 text-2xl font-bold leading-9 text-slate-800">
-            지금은 필요한 물건을 미리 확인하는 시간이에요.
-          </div>
-          <div className="rounded-2xl bg-sky-50 p-5 text-2xl font-bold leading-9 text-slate-800">
-            아침에 가방에 넣을 물건을 기억해요.
+          <div className="rounded-[2rem] border-4 border-amber-200 bg-white/90 p-5 shadow-xl lg:p-7">
+            <div className="grid gap-5 xl:grid-cols-[0.42fr_0.58fr]">
+              <div className="relative min-h-96 overflow-hidden rounded-[2rem] border-4 border-blue-300 bg-gradient-to-b from-blue-100 to-blue-300 p-6 shadow-inner">
+                <div className="absolute bottom-8 left-1/2 h-64 w-72 -translate-x-1/2 rounded-[2rem] bg-blue-700 shadow-2xl">
+                  <div className="absolute -top-10 left-1/2 h-16 w-28 -translate-x-1/2 rounded-t-full border-8 border-blue-800" />
+                  <div className="absolute left-8 top-10 right-8 h-16 rounded-[1.2rem] bg-blue-500" />
+                  <div className="absolute bottom-10 left-8 right-8 grid grid-cols-3 gap-3">
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <span
+                        key={index}
+                        className="h-12 rounded-2xl border-2 border-blue-300/80"
+                      />
+                    ))}
+                  </div>
+                  <div className="absolute right-5 bottom-5 h-8 w-8 rounded-full bg-amber-300" />
+                </div>
+                <div className="absolute left-6 top-6 rounded-[1.5rem] bg-white/90 px-5 py-4 shadow-lg">
+                  <p className="text-xl font-extrabold text-slate-500">
+                    오늘 날씨
+                  </p>
+                  <p className="mt-1 text-4xl font-extrabold text-slate-950">
+                    {weatherText}
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-[2rem] border-4 border-lime-200 bg-lime-50/90 p-5 shadow-inner">
+                <p className="text-3xl font-extrabold text-slate-950 lg:text-4xl">
+                  AI가 알려준 준비물
+                </p>
+                <p className="mt-3 text-xl font-bold leading-8 text-slate-600">
+                  아침에 가방에 넣을 물건을 기억해요.
+                </p>
+
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                  {requiredItems.map((item) => (
+                    <div
+                      key={item}
+                      className="flex min-h-36 flex-col items-center justify-center rounded-[1.7rem] border-4 border-lime-200 bg-white px-4 py-5 text-center shadow-lg"
+                    >
+                      <span className="text-6xl" aria-hidden="true">
+                        {bagItemEmoji[item] ?? '🎒'}
+                      </span>
+                      <span className="mt-3 text-2xl font-extrabold text-slate-950">
+                        {item}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-[2rem] border-4 border-amber-200 bg-amber-50 p-5 text-center shadow-inner">
+              <p className="text-2xl font-extrabold text-slate-800 lg:text-3xl">
+                전날: 확인하고 기억하기 · 아침: 실제로 가방에 넣기
+              </p>
+            </div>
           </div>
         </div>
-      </InfoCard>
 
-      <div className="mt-8 flex flex-col justify-end gap-4 sm:flex-row">
-        <PrimaryButton
-          variant="secondary"
-          onClick={() => goToScreen(SCREEN_IDS.eveningPreparation)}
-        >
-          전날 준비로 돌아가기
-        </PrimaryButton>
-        <PrimaryButton onClick={handleConfirmBag}>
-          준비물 확인했어요
-        </PrimaryButton>
+        <div className="relative mt-7 flex flex-col justify-center gap-4 sm:flex-row">
+          <PrimaryButton
+            variant="secondary"
+            onClick={() => goToScreen(SCREEN_IDS.eveningPreparation)}
+          >
+            전날 준비 다시 보기
+          </PrimaryButton>
+          <PrimaryButton onClick={handleConfirmBag}>
+            준비물 확인했어요
+          </PrimaryButton>
+        </div>
       </div>
     </section>
   );

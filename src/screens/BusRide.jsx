@@ -3,12 +3,12 @@ import { useMemo, useState } from 'react';
 import PrimaryButton from '../components/PrimaryButton.jsx';
 import { useGame } from '../context/GameContext.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
+import { bonHighleeScenario } from '../data/scenarios/bonHighlee.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
 const TEXT = {
   startStop: '\ucd9c\ubc1c \uc815\ub958\uc7a5',
   marketStop: '\uc911\uc559\uc2dc\uc7a5',
-  officeStop: '\ubcf8\uc564\ud558\uc774\ub9ac \uc55e',
   nextStop: '\ub2e4\uc74c \uc815\ub958\uc7a5',
   busSuffix: '\ubc88',
   companyDirection: '\ud68c\uc0ac \ubc29\ud5a5',
@@ -50,11 +50,14 @@ const TEXT = {
 const BUS_STOPS = [
   { id: 'start', name: TEXT.startStop },
   { id: 'market', name: TEXT.marketStop },
-  { id: 'office', name: TEXT.officeStop },
+  {
+    id: bonHighleeScenario.commute.destinationStop.id,
+    name: bonHighleeScenario.commute.destinationStop.name,
+  },
   { id: 'next', name: TEXT.nextStop },
 ];
 
-const TARGET_STOP_NAME = TEXT.officeStop;
+const TARGET_STOP_ID = bonHighleeScenario.commute.destinationStop.id;
 const MASCOT_IMAGE = '/images/mascot/ai_robot_guide.png';
 
 function BusRide() {
@@ -73,9 +76,9 @@ function BusRide() {
 
   const currentStop = BUS_STOPS[currentStopIndex];
   const targetStopIndex = BUS_STOPS.findIndex(
-    (stop) => stop.name === TARGET_STOP_NAME,
+    (stop) => stop.id === TARGET_STOP_ID,
   );
-  const isTargetStop = currentStop.name === TARGET_STOP_NAME;
+  const isTargetStop = currentStop.id === TARGET_STOP_ID;
   const hasPassedTarget = targetStopIndex >= 0 && currentStopIndex > targetStopIndex;
 
   const busNumberText = useMemo(() => {
@@ -92,6 +95,7 @@ function BusRide() {
   };
 
   const makeDecision = (action) => ({
+    stopId: currentStop.id,
     stopName: currentStop.name,
     action,
     isTargetStop,
@@ -116,6 +120,7 @@ function BusRide() {
       hasCompletedBusRide: true,
       currentStopIndex,
       busRideDecisions: nextDecisions,
+      gotOffAtStopId: currentStop.id,
       gotOffAtStopName: currentStop.name,
     });
     goToScreen(SCREEN_IDS.destinationMap);
@@ -184,7 +189,7 @@ function BusRide() {
           </div>
         </aside>
 
-        <main className="overflow-hidden rounded-[2rem] border-4 border-blue-200 bg-gradient-to-b from-slate-200 via-blue-50 to-sky-100 p-5 shadow-xl">
+        <section className="overflow-hidden rounded-[2rem] border-4 border-blue-200 bg-gradient-to-b from-slate-200 via-blue-50 to-sky-100 p-5 shadow-xl">
           <div className="grid gap-4 md:grid-cols-3">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
@@ -224,7 +229,7 @@ function BusRide() {
                   {TEXT.targetStop}
                 </p>
                 <p className="mt-4 break-keep text-3xl font-black text-slate-900">
-                  {TARGET_STOP_NAME}
+                  {bonHighleeScenario.commute.destinationStop.name}
                 </p>
                 <div className="mt-5 rounded-full bg-white px-4 py-3 text-lg font-black text-slate-700 shadow-inner">
                   {isTargetStop
@@ -256,7 +261,7 @@ function BusRide() {
               {BUS_STOPS.map((stop, index) => {
                 const isCurrent = index === currentStopIndex;
                 const isPassed = index < currentStopIndex;
-                const isTarget = stop.name === TARGET_STOP_NAME;
+                const isTarget = stop.id === TARGET_STOP_ID;
 
                 return (
                   <div
@@ -264,7 +269,7 @@ function BusRide() {
                     className={[
                       'relative rounded-[1.5rem] border-4 p-4 text-center shadow-sm',
                       isCurrent
-                        ? 'border-amber-400 bg-amber-100'
+                        ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-100'
                         : isPassed
                           ? 'border-sky-300 bg-sky-50'
                           : 'border-slate-200 bg-white',
@@ -305,20 +310,20 @@ function BusRide() {
 
           <div className="mt-5 grid gap-4 md:grid-cols-[1fr_1fr]">
             <PrimaryButton
-              className="border-4 border-orange-200 bg-gradient-to-r from-orange-400 to-amber-400 py-6 text-2xl text-white hover:from-orange-500 hover:to-amber-500"
+              className="cursor-pointer border-4 border-orange-200 bg-gradient-to-r from-orange-400 to-amber-400 py-6 text-2xl text-white transition-all duration-200 ease-out hover:-translate-y-1 hover:from-orange-500 hover:to-amber-500 hover:shadow-xl active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-blue-200"
               onClick={handlePressBell}
             >
               {TEXT.pressBell}
             </PrimaryButton>
             <PrimaryButton
               variant="secondary"
-              className="border-4 border-sky-200 bg-sky-50 py-6 text-2xl text-sky-800 hover:bg-sky-100"
+              className="cursor-pointer border-4 border-sky-200 bg-sky-50 py-6 text-2xl text-sky-800 transition-all duration-200 ease-out hover:-translate-y-1 hover:bg-sky-100 hover:shadow-xl active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-blue-200"
               onClick={handleStayOnBus}
             >
               {TEXT.stayOnBus}
             </PrimaryButton>
           </div>
-        </main>
+        </section>
       </section>
     </div>
   );

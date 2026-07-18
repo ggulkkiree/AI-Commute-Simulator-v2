@@ -3,8 +3,8 @@ import { students as defaultStudents } from '../data/students.js';
 import { morningActivities as morningActivityDefinitions } from '../data/morningActivities.js';
 import { loadSelectedStudent, loadStudentList } from '../utils/storage.js';
 
-const savedStudent = loadSelectedStudent();
 const savedStudentList = loadStudentList(defaultStudents);
+const savedStudent = loadSelectedStudent(savedStudentList);
 
 // Initial state for the core commute simulation flow.
 export const initialGameState = {
@@ -36,6 +36,7 @@ export const initialGameState = {
     busStopDecisions: [],
     currentStopIndex: 0,
     busRideDecisions: [],
+    gotOffAtStopId: null,
     gotOffAtStopName: null,
     selectedDestinationId: null,
     selectedDestinationName: null,

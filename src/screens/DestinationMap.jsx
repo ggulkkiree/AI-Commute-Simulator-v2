@@ -1,6 +1,7 @@
 import PrimaryButton from '../components/PrimaryButton.jsx';
 import { useGame } from '../context/GameContext.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
+import { getBonHighleeStopDisplayName } from '../data/scenarios/bonHighlee.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
 const TEXT = {
@@ -63,7 +64,12 @@ const MASCOT_IMAGE = '/images/mascot/ai_robot_guide.png';
 function DestinationMap() {
   const { state, dispatch, goToScreen } = useGame();
   const selectedBusNumber = state.studentChoices?.selectedBusNumber;
+  const gotOffAtStopId = state.studentChoices?.gotOffAtStopId;
   const gotOffAtStopName = state.studentChoices?.gotOffAtStopName;
+  const displayedStopName = getBonHighleeStopDisplayName({
+    stopId: gotOffAtStopId,
+    stopName: gotOffAtStopName,
+  });
 
   const handleSelectDestination = (destination) => {
     const previousAttempts = state.studentChoices?.destinationAttempts ?? [];
@@ -118,7 +124,7 @@ function DestinationMap() {
           </div>
         </aside>
 
-        <main className="rounded-[2rem] border-4 border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-5 shadow-xl">
+        <section className="rounded-[2rem] border-4 border-emerald-200 bg-gradient-to-br from-emerald-50 via-white to-amber-50 p-5 shadow-xl">
           <div className="grid gap-4 xl:grid-cols-[1fr_300px]">
             <div className="rounded-[2rem] border-4 border-white bg-white/90 p-6 shadow-lg">
               <div className="flex flex-wrap items-center gap-3">
@@ -133,15 +139,15 @@ function DestinationMap() {
               </div>
 
               <p className="mt-5 text-2xl font-black text-slate-700">
-                {gotOffAtStopName ?? TEXT.currentLocationValue}
+                {displayedStopName ?? TEXT.currentLocationValue}
               </p>
               <h2 className="mt-3 break-keep text-5xl font-black text-slate-950">
                 {TEXT.chooseGuide}
               </h2>
             </div>
 
-            <div className="rounded-[2rem] border-4 border-amber-200 bg-amber-50 p-6 text-center shadow-lg">
-              <p className="text-lg font-black text-amber-700">
+            <div className="rounded-[2rem] border-4 border-blue-300 bg-blue-50 p-6 text-center shadow-lg ring-4 ring-blue-100">
+              <p className="mx-auto w-fit rounded-full bg-blue-600 px-4 py-2 text-base font-black text-white">
                 {TEXT.targetLabel}
               </p>
               <p className="mt-4 text-5xl font-black text-slate-950">
@@ -169,8 +175,18 @@ function DestinationMap() {
                   key={destination.id}
                   type="button"
                   onClick={() => handleSelectDestination(destination)}
-                  className="group flex min-h-[230px] flex-col justify-between rounded-[1.75rem] border-4 border-white bg-white/95 p-5 text-center shadow-lg transition hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-300 xl:even:mt-20 xl:odd:mb-20"
+                  className={[
+                    'group flex min-h-[230px] cursor-pointer flex-col justify-between rounded-[1.75rem] border-4 bg-white/95 p-5 text-center shadow-lg transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-blue-200 xl:even:mt-20 xl:odd:mb-20',
+                    destination.isTargetDestination
+                      ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-100'
+                      : 'border-white hover:border-amber-300',
+                  ].join(' ')}
                 >
+                  {destination.isTargetDestination ? (
+                    <span className="mb-2 self-center rounded-full bg-blue-500 px-4 py-1 text-sm font-black text-white shadow">
+                      {TEXT.targetDestination}
+                    </span>
+                  ) : null}
                   <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border-4 border-sky-200 bg-gradient-to-br from-white to-amber-100 text-5xl font-black text-slate-800 shadow-inner">
                     {destination.icon}
                   </span>
@@ -191,12 +207,13 @@ function DestinationMap() {
           <div className="mt-6 flex justify-end">
             <PrimaryButton
               variant="secondary"
+              className="cursor-pointer transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-blue-200"
               onClick={() => goToScreen(SCREEN_IDS.busRide)}
             >
               {TEXT.backToBusRide}
             </PrimaryButton>
           </div>
-        </main>
+        </section>
       </section>
     </div>
   );

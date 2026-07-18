@@ -2,6 +2,10 @@ import InfoCard from '../components/InfoCard.jsx';
 import PrimaryButton from '../components/PrimaryButton.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
 import { useGame } from '../context/GameContext.jsx';
+import {
+  getBonHighleeStopDisplayName,
+  isBonHighleeDestinationStop,
+} from '../data/scenarios/bonHighlee.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
 const TEXT = {
@@ -33,7 +37,6 @@ const TEXT = {
   reviewTitle: '\ub2e4\uc2dc \uc5f0\uc2b5\ud560 \uc810',
   nextTitle: '\ub2e4\uc74c \uc9c0\ub3c4 \uc81c\uc548',
   targetBus: '200',
-  targetStop: '\ubcf8\uc564\ud558\uc774\ub9ac \uc55e',
   targetDestination: '\ud68c\uc0ac',
   busSuffix: '\ubc88',
   targetMatch: '\ud655\uc778 \uc644\ub8cc',
@@ -99,7 +102,10 @@ function getMissingItems(requiredItems, selectedItems) {
 
 function createFallbackSummary({ aiPlanInput, aiPlanResult, studentChoices }) {
   const busOk = normalizeBus(studentChoices?.selectedBusNumber) === TEXT.targetBus;
-  const stopOk = studentChoices?.gotOffAtStopName === TEXT.targetStop;
+  const stopOk = isBonHighleeDestinationStop({
+    stopId: studentChoices?.gotOffAtStopId,
+    stopName: studentChoices?.gotOffAtStopName,
+  });
   const destinationOk =
     studentChoices?.selectedDestinationId === 'company' ||
     studentChoices?.selectedDestinationName === TEXT.targetDestination;
@@ -247,7 +253,12 @@ function createTimeline({ state, report }) {
     {
       label: TIMELINE_LABELS.getOff,
       status: getStatus(report.stopOk, rideDecisions.length > 0),
-      detail: displayValue(studentChoices?.gotOffAtStopName),
+      detail: displayValue(
+        getBonHighleeStopDisplayName({
+          stopId: studentChoices?.gotOffAtStopId,
+          stopName: studentChoices?.gotOffAtStopName,
+        }),
+      ),
     },
     {
       label: TIMELINE_LABELS.destination,
@@ -328,9 +339,9 @@ function SimpleList({ items, emptyText }) {
 
   return (
     <ul className="mt-4 space-y-3">
-      {displayItems.map((item) => (
+      {displayItems.map((item, index) => (
         <li
-          key={item}
+          key={`${item}-${index}`}
           className="rounded-[1.25rem] bg-white px-5 py-4 text-lg font-bold leading-7 text-slate-800 shadow-sm"
         >
           {item}
@@ -349,6 +360,10 @@ function TeacherReport() {
   const busStopDecisions = asArray(studentChoices?.busStopDecisions);
   const busRideDecisions = asArray(studentChoices?.busRideDecisions);
   const destinationAttempts = asArray(studentChoices?.destinationAttempts);
+  const gotOffAtStopDisplayName = getBonHighleeStopDisplayName({
+    stopId: studentChoices?.gotOffAtStopId,
+    stopName: studentChoices?.gotOffAtStopName,
+  });
   const resultTitle =
     report.summary.resultType === 'success'
       ? TEXT.success
@@ -373,7 +388,7 @@ function TeacherReport() {
         ? `${normalizeBus(studentChoices.selectedBusNumber)}${TEXT.busSuffix}`
         : TEXT.checking,
     },
-    { title: TEXT.gotOffStop, value: displayValue(studentChoices?.gotOffAtStopName) },
+    { title: TEXT.gotOffStop, value: displayValue(gotOffAtStopDisplayName) },
     {
       title: TEXT.selectedDestination,
       value: displayValue(studentChoices?.selectedDestinationName),
@@ -438,7 +453,9 @@ function TeacherReport() {
             items={busStopDecisions.map(
               (decision) =>
                 `${decision.busNumber}${TEXT.busSuffix}: ${
-                  decision.action === 'board' ? TEXT.board : TEXT.wait
+                  decision.action === 'ride' || decision.action === 'board'
+                    ? TEXT.board
+                    : TEXT.wait
                 }`,
             )}
             emptyText={TEXT.noRecord}
@@ -452,7 +469,10 @@ function TeacherReport() {
           <SimpleList
             items={busRideDecisions.map(
               (decision) =>
-                `${decision.stopName}: ${
+                `${getBonHighleeStopDisplayName({
+                  stopId: decision.stopId,
+                  stopName: decision.stopName,
+                })}: ${
                   decision.action === 'bell' ? TEXT.bell : TEXT.stay
                 }`,
             )}

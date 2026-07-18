@@ -132,6 +132,7 @@ function BusStop() {
     destination: '\ubaa9\uc801\uc9c0 \ud655\uc778',
     color: 'from-blue-500 to-sky-400',
   };
+  const isTargetBusHere = currentBusNumber === targetBusNumber;
 
   const saveBusStopProgress = (nextDecisions, nextIndex) => {
     dispatch({
@@ -226,9 +227,21 @@ function BusStop() {
             </div>
           </aside>
 
-          <main className="rounded-[2rem] border-4 border-white bg-white/90 p-5 shadow-xl">
+          <section className="rounded-[2rem] border-4 border-white bg-white/90 p-5 shadow-xl">
             <div className="grid gap-5 xl:grid-cols-[1fr_280px]">
-              <div className="rounded-[2rem] border-4 border-amber-200 bg-gradient-to-b from-white to-amber-50 p-5 text-center shadow-inner">
+              <div
+                className={[
+                  'rounded-[2rem] border-4 bg-gradient-to-b from-white to-amber-50 p-5 text-center shadow-inner transition-all duration-200 ease-out',
+                  isTargetBusHere
+                    ? 'border-blue-500 bg-blue-50 ring-4 ring-blue-100'
+                    : 'border-amber-200',
+                ].join(' ')}
+              >
+                {isTargetBusHere ? (
+                  <div className="mx-auto mb-3 w-fit rounded-full bg-blue-500 px-5 py-2 text-lg font-black text-white shadow">
+                    {TEXT.targetBus}
+                  </div>
+                ) : null}
                 <p className="text-2xl font-black text-slate-700">
                   {TEXT.currentBus}
                 </p>
@@ -246,17 +259,17 @@ function BusStop() {
               </div>
 
               <div className="grid gap-4">
-                <div className="rounded-[1.75rem] border-4 border-blue-200 bg-blue-50 p-5 text-center shadow-lg">
-                  <p className="text-lg font-black text-blue-700">
+                <div className="rounded-[1.75rem] border-4 border-blue-200 bg-blue-50 p-5 text-center shadow-lg ring-4 ring-blue-100">
+                  <p className="mx-auto w-fit rounded-full bg-blue-600 px-4 py-2 text-base font-black text-white">
                     {TEXT.targetBus}
                   </p>
-                  <p className="mt-2 text-5xl font-black text-slate-950">
+                  <p className="mt-3 text-5xl font-black text-slate-950">
                     {targetBusNumber}
                     {TEXT.busSuffix}
                   </p>
                 </div>
                 <div className="rounded-[1.75rem] border-4 border-emerald-200 bg-emerald-50 p-5 shadow-lg">
-                  <p className="text-lg font-black text-emerald-700">
+                  <p className="w-fit rounded-full bg-emerald-500 px-4 py-2 text-base font-black text-white">
                     {TEXT.stop}
                   </p>
                   <p className="mt-2 break-keep text-xl font-bold text-slate-700">
@@ -264,7 +277,7 @@ function BusStop() {
                   </p>
                 </div>
                 <div className="rounded-[1.75rem] border-4 border-amber-200 bg-amber-50 p-5 text-center shadow-lg">
-                  <p className="text-lg font-black text-amber-700">
+                  <p className="mx-auto w-fit rounded-full bg-amber-300 px-4 py-2 text-base font-black text-amber-900">
                     {TEXT.waitCount}
                   </p>
                   <p className="mt-2 text-5xl font-black text-slate-950">
@@ -273,19 +286,19 @@ function BusStop() {
                 </div>
               </div>
             </div>
-          </main>
+          </section>
         </div>
 
         <div className="relative mt-5 grid gap-4 md:grid-cols-2">
           <PrimaryButton
-            className="py-6 text-2xl"
+            className="cursor-pointer py-6 text-2xl transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-blue-200"
             onClick={handleRideCurrentBus}
           >
             {TEXT.ride}
           </PrimaryButton>
           <PrimaryButton
             variant="secondary"
-            className="border-4 border-amber-200 bg-amber-50 py-6 text-2xl text-amber-800 hover:bg-amber-100"
+            className="cursor-pointer border-4 border-amber-200 bg-amber-50 py-6 text-2xl text-amber-800 transition-all duration-200 ease-out hover:-translate-y-1 hover:bg-amber-100 hover:shadow-xl active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-blue-200"
             onClick={handleWaitForNextBus}
           >
             {TEXT.wait}
@@ -295,7 +308,7 @@ function BusStop() {
         <div className="relative mt-4 flex justify-center">
           <PrimaryButton
             variant="secondary"
-            className="text-base lg:text-lg"
+            className="cursor-pointer text-base transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-xl active:scale-[0.98] focus-visible:ring-4 focus-visible:ring-blue-200 lg:text-lg"
             onClick={() => goToScreen(SCREEN_IDS.commuteScreen)}
           >
             {TEXT.backCommute}

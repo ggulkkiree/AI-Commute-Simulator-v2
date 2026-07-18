@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PrimaryButton from '../components/PrimaryButton.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
 import { useGame } from '../context/GameContext.jsx';
-import { studentCharacterImageList } from '../data/imageAssets.js';
+import { getStudentAvatarImage } from '../data/imageAssets.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 import { students } from '../data/students.js';
 import { saveSelectedStudent } from '../utils/storage.js';
@@ -25,11 +25,11 @@ const cardToneClasses = [
   'from-amber-100 to-orange-50',
 ];
 
-function getStudentImage(student, index) {
+function getStudentImage(student) {
   return (
     student.avatarImage ??
     student.imageUrl ??
-    studentCharacterImageList[index % studentCharacterImageList.length]
+    getStudentAvatarImage(student.avatarId)
   );
 }
 
@@ -148,7 +148,7 @@ export default function StudentSelect() {
 
           <div className="mt-5 grid gap-4 md:grid-cols-3 xl:grid-cols-5">
             {studentList.map((student, index) => {
-              const imageSrc = getStudentImage(student, index);
+              const imageSrc = getStudentImage(student);
               const isSelected = selectedStudent?.id === student.id;
               const displayName = getDisplayName(student);
 

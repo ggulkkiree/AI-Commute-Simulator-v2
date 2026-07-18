@@ -2,6 +2,10 @@ import InfoCard from '../components/InfoCard.jsx';
 import PrimaryButton from '../components/PrimaryButton.jsx';
 import { useGame } from '../context/GameContext.jsx';
 import { GAME_ACTIONS } from '../context/gameActions.js';
+import {
+  getBonHighleeStopDisplayName,
+  isBonHighleeDestinationStop,
+} from '../data/scenarios/bonHighlee.js';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
 const TEXT = {
@@ -31,7 +35,6 @@ const TEXT = {
   busSuffix: '\ubc88',
   busFullSuffix: '\ubc88 \ubc84\uc2a4',
   targetBus: '200',
-  targetStop: '\ubcf8\uc564\ud558\uc774\ub9ac \uc55e',
   targetDestination: '\ud68c\uc0ac',
   wakeNow: '\uc77c\uc5b4\ub098\uc11c \uc900\ube44\ud588\uc5b4\uc694',
   sleptMore: '10\ubd84 \ub354 \uc790\uae30\ub97c \uc120\ud0dd\ud588\uc5b4\uc694',
@@ -129,7 +132,10 @@ function addMinutesToTime(timeText, minutesToAdd) {
 function createResultSummary({ aiPlanInput, aiPlanResult, studentChoices }) {
   const selectedBusNumber = normalizeNumber(studentChoices?.selectedBusNumber);
   const busOk = selectedBusNumber === TEXT.targetBus;
-  const stopOk = studentChoices?.gotOffAtStopName === TEXT.targetStop;
+  const stopOk = isBonHighleeDestinationStop({
+    stopId: studentChoices?.gotOffAtStopId,
+    stopName: studentChoices?.gotOffAtStopName,
+  });
   const destinationOk =
     studentChoices?.selectedDestinationId === 'company' ||
     studentChoices?.selectedDestinationName === TEXT.targetDestination;
@@ -276,7 +282,12 @@ function ResultScreen() {
     },
     {
       title: TEXT.stop,
-      value: displayValue(studentChoices?.gotOffAtStopName),
+      value: displayValue(
+        getBonHighleeStopDisplayName({
+          stopId: studentChoices?.gotOffAtStopId,
+          stopName: studentChoices?.gotOffAtStopName,
+        }),
+      ),
     },
     {
       title: TEXT.destination,

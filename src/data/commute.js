@@ -1,3 +1,7 @@
+import { bonHighleeScenario } from './scenarios/bonHighlee.js';
+
+const destinationStop = bonHighleeScenario.commute.destinationStop;
+
 // Mock commute data for the Bon & Highlee core route briefing.
 export const commuteConfig = {
   scenarioId: 'bonHighlee',
@@ -9,12 +13,12 @@ export const commuteConfig = {
   busNumber: '200',
   wrongBusNumbers: ['999', '119'],
   startStop: '우리 집 앞 정류장',
-  destinationStop: '본하이리 정류장',
+  destinationStop: destinationStop.name,
   stopList: [
     '우리 집 앞 정류장',
     '중앙시장',
     '우리동네',
-    '본하이리 정류장',
+    destinationStop.name,
   ],
   estimatedWalkMinutes: 20,
   estimatedBusMinutes: 30,

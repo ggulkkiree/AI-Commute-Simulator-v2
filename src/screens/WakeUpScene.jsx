@@ -4,7 +4,7 @@ import { GAME_ACTIONS } from '../context/gameActions.js';
 import { useGame } from '../context/GameContext.jsx';
 import { SCREEN_IDS } from '../data/screenIds.js';
 
-const mascotImage = '/images/mascot/ai_robot_guide.png';
+const wakeUpSceneImage = '/images/references/ref_wakeup_scene.png';
 
 function hasWakeUpPlan(aiPlanInput, aiPlanResult) {
   return Boolean(
@@ -70,67 +70,63 @@ export default function WakeUpScene() {
         targetArrivalTime={aiPlanInput.arrivalTime}
       />
 
-      <div className="relative overflow-hidden rounded-[2.5rem] border-4 border-amber-200 bg-gradient-to-br from-yellow-100 via-orange-50 to-sky-200 p-5 shadow-2xl lg:p-7">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_82%_18%,rgba(250,204,21,0.7),transparent_14%),radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.65),transparent_20%)]" />
-        <div className="absolute right-16 top-16 h-28 w-28 rounded-full bg-yellow-200 shadow-[0_0_45px_rgba(250,204,21,0.85)]" />
+      <div className="rounded-[2.5rem] border-4 border-amber-200 bg-gradient-to-b from-amber-100 via-orange-100 to-sky-200 p-3 shadow-2xl sm:p-4 lg:p-5">
+        <div className="relative">
+          <div className="relative min-h-[30rem] overflow-hidden rounded-[2rem] bg-amber-100 shadow-2xl sm:min-h-[38rem] lg:aspect-[1672/941] lg:min-h-0">
+            <img
+              src={wakeUpSceneImage}
+              alt="햇살이 들어오는 침실에서 학생이 알람을 듣고 일어나는 장면"
+              className="absolute inset-0 h-full w-full object-cover object-[55%_center] lg:object-contain lg:object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-amber-950/5 via-transparent to-amber-950/15 lg:hidden" />
 
-        <div className="relative mx-auto mb-6 max-w-6xl rounded-[2rem] border-4 border-amber-200 bg-amber-50/95 px-8 py-6 text-center shadow-xl">
-          <p className="text-4xl font-extrabold text-slate-950 lg:text-5xl">
-            좋은 아침이에요
-          </p>
-          <p className="mt-3 text-2xl font-bold leading-9 text-slate-600">
-            알람 시간 {aiPlanResult.recommendedWakeUpTime} · 지금 선택하고 아침 준비로 가요
-          </p>
-        </div>
-
-        <div className="relative grid gap-6 lg:grid-cols-[0.28fr_0.72fr]">
-          <aside className="flex flex-col justify-between rounded-[2rem] border-4 border-sky-300 bg-gradient-to-b from-cyan-100 to-sky-300 p-5 shadow-xl">
-            <div className="rounded-[1.7rem] bg-white/95 p-5 shadow-inner">
-              <p className="text-2xl font-extrabold text-sky-800">
-                지금 일어나면 계획을 지키기 쉬워요.
+            <div className="absolute left-4 right-4 top-4 z-10 rounded-[1.5rem] bg-amber-50/95 px-5 py-4 text-center shadow-xl backdrop-blur-sm sm:left-8 sm:right-8 sm:top-7 lg:left-[17%] lg:right-[10%] lg:top-[4%] lg:flex lg:h-[15%] lg:flex-col lg:justify-center lg:bg-transparent lg:px-8 lg:py-0 lg:shadow-none lg:backdrop-blur-none">
+              <p className="text-2xl font-extrabold text-slate-950 sm:text-3xl lg:text-[clamp(1.75rem,2.4vw,2.5rem)]">
+                좋은 아침이에요
               </p>
-              <p className="mt-3 text-xl font-bold leading-8 text-slate-700">
-                10분 더 자는 선택도 기록해 둘게요.
+              <p className="mt-2 break-keep text-base font-bold leading-7 text-slate-600 sm:text-xl lg:mt-1 lg:text-[clamp(0.9rem,1.35vw,1.25rem)] lg:leading-7">
+                알람 시간 {aiPlanResult.recommendedWakeUpTime} · 지금 선택하고 아침 준비로 가요
               </p>
             </div>
-            <div className="mt-6 flex h-56 items-end justify-center">
-              <img
-                src={mascotImage}
-                alt="AI 안내 로봇"
-                className="h-full w-full object-contain"
-              />
-            </div>
+          </div>
+
+          <aside className="relative z-10 mt-4 rounded-[1.75rem] border-2 border-sky-200 bg-white/95 p-5 text-center shadow-xl lg:absolute lg:left-[2.4%] lg:top-[23%] lg:mt-0 lg:flex lg:h-[34%] lg:w-[17.5%] lg:flex-col lg:justify-center lg:border-0 lg:bg-transparent lg:p-3 lg:shadow-none">
+            <p className="text-xl font-extrabold text-sky-800 lg:text-[clamp(1rem,1.35vw,1.3rem)]">
+              지금 일어나면 계획을 지키기 쉬워요.
+            </p>
+            <p className="mt-3 text-base font-bold leading-7 text-slate-700 lg:mt-2 lg:text-[clamp(0.8rem,1.05vw,1rem)] lg:leading-6">
+              10분 더 자는 선택도 기록해 둘게요.
+            </p>
           </aside>
 
-          <div className="relative min-h-[34rem] overflow-hidden rounded-[2rem] border-4 border-amber-200 bg-gradient-to-b from-yellow-100 via-orange-100 to-sky-100 p-7 shadow-xl">
-            <div className="absolute right-8 top-8 h-48 w-72 overflow-hidden rounded-[2rem] border-4 border-sky-200 bg-gradient-to-b from-sky-300 to-sky-100 shadow-inner">
-              <div className="absolute right-10 top-8 h-20 w-20 rounded-full bg-yellow-200 shadow-[0_0_35px_rgba(250,204,21,0.85)]" />
-              <div className="absolute bottom-8 left-8 h-16 w-24 rounded-t-full bg-green-300" />
-              <div className="absolute bottom-6 right-12 h-20 w-28 rounded-t-full bg-green-200" />
-              <div className="absolute left-10 top-10 h-8 w-20 rounded-full bg-white/80" />
-            </div>
-
-            <div className="absolute left-12 bottom-10 h-40 w-[34rem] rounded-t-[8rem] bg-amber-800 shadow-2xl" />
-            <div className="absolute left-20 bottom-24 h-28 w-96 rounded-t-[4rem] bg-blue-800" />
-            <div className="absolute left-40 bottom-40 h-32 w-32 rounded-full bg-amber-200 shadow-lg" />
-            <div className="absolute left-24 bottom-16 h-28 w-[38rem] rounded-[4rem] bg-indigo-500 shadow-xl" />
-            <div className="absolute left-52 bottom-64 rotate-12 text-5xl font-extrabold text-yellow-500">
-              ♪
-            </div>
-            <div className="absolute left-[31rem] bottom-60 -rotate-12 text-5xl font-extrabold text-blue-500">
-              ♪
-            </div>
-            <div className="absolute bottom-[8.5rem] left-[34rem] rounded-[1.5rem] border-4 border-yellow-300 bg-amber-100 px-5 py-4 text-center shadow-lg">
-              <p className="text-xl font-extrabold text-slate-600">알람</p>
-              <p className="text-4xl font-extrabold text-slate-950">
-                {aiPlanResult.recommendedWakeUpTime}
-              </p>
-            </div>
-            <div className="absolute left-[34rem] bottom-60 h-20 w-20 animate-pulse rounded-full border-4 border-yellow-300 bg-yellow-200/60" />
+          <div className="relative z-10 mt-4 grid gap-3 sm:grid-cols-2 lg:absolute lg:bottom-[4.5%] lg:left-[34.5%] lg:right-[32.5%] lg:mt-0">
+            <PrimaryButton
+              className="w-full rounded-[2rem] bg-gradient-to-r from-lime-500 to-emerald-400 py-7 text-3xl shadow-emerald-200/80 hover:from-lime-600 hover:to-emerald-500 lg:!rounded-[1.4rem] lg:!border-0 lg:!px-3 lg:!py-3 lg:!text-base xl:!text-lg"
+              onClick={() =>
+                saveWakeUpChoice({
+                  choice: 'wake-up-now',
+                  delayMinutes: 0,
+                })
+              }
+            >
+              일어나서 준비하기
+            </PrimaryButton>
+            <PrimaryButton
+              variant="secondary"
+              className="w-full rounded-[2rem] border-4 border-amber-200 bg-amber-50 py-7 text-3xl text-amber-800 shadow-amber-200/80 hover:bg-amber-100 lg:!rounded-[1.4rem] lg:!border-0 lg:!px-3 lg:!py-3 lg:!text-base xl:!text-lg"
+              onClick={() =>
+                saveWakeUpChoice({
+                  choice: 'sleep-10-more',
+                  delayMinutes: 10,
+                })
+              }
+            >
+              10분 더 자기
+            </PrimaryButton>
           </div>
         </div>
 
-        <div className="relative mt-6 grid gap-4 lg:grid-cols-3">
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
           <div className="rounded-[1.75rem] border-2 border-amber-200 bg-white/90 p-5 text-center shadow-lg">
             <p className="text-xl font-extrabold text-slate-500">
               알람 시간
@@ -153,33 +149,7 @@ export default function WakeUpScene() {
           </div>
         </div>
 
-        <div className="relative mt-7 grid gap-5 lg:grid-cols-2">
-          <PrimaryButton
-            className="rounded-[2rem] bg-gradient-to-r from-lime-500 to-emerald-400 py-7 text-3xl shadow-emerald-200/80 hover:from-lime-600 hover:to-emerald-500"
-            onClick={() =>
-              saveWakeUpChoice({
-                choice: 'wake-up-now',
-                delayMinutes: 0,
-              })
-            }
-          >
-            일어나서 준비하기
-          </PrimaryButton>
-          <PrimaryButton
-            variant="secondary"
-            className="rounded-[2rem] border-4 border-amber-200 bg-amber-50 py-7 text-3xl text-amber-800 shadow-amber-200/80 hover:bg-amber-100"
-            onClick={() =>
-              saveWakeUpChoice({
-                choice: 'sleep-10-more',
-                delayMinutes: 10,
-              })
-            }
-          >
-            10분 더 자기
-          </PrimaryButton>
-        </div>
-
-        <div className="relative mt-5 flex justify-center">
+        <div className="mt-5 flex justify-center">
           <PrimaryButton
             variant="secondary"
             className="text-lg lg:text-xl"

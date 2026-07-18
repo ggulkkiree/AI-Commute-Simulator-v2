@@ -16,6 +16,31 @@ export function gameReducer(state, action) {
         studentList: [...(state.studentList ?? []), action.payload],
       };
 
+    case GAME_ACTIONS.UPDATE_STUDENT: {
+      const updatedStudent = action.payload;
+
+      if (!updatedStudent?.id) {
+        return state;
+      }
+
+      const isSelectedStudent = state.selectedStudent?.id === updatedStudent.id;
+
+      return {
+        ...state,
+        studentList: (state.studentList ?? []).map((student) =>
+          student.id === updatedStudent.id
+            ? { ...student, ...updatedStudent }
+            : student,
+        ),
+        selectedStudent: isSelectedStudent
+          ? { ...state.selectedStudent, ...updatedStudent }
+          : state.selectedStudent,
+        studentLevel: isSelectedStudent
+          ? (updatedStudent.level ?? null)
+          : state.studentLevel,
+      };
+    }
+
     case GAME_ACTIONS.DELETE_STUDENT:
       return {
         ...state,
@@ -177,6 +202,10 @@ export function gameReducer(state, action) {
             action.payload?.busRideDecisions ??
             state.studentChoices?.busRideDecisions ??
             [],
+          gotOffAtStopId:
+            action.payload?.gotOffAtStopId ??
+            state.studentChoices?.gotOffAtStopId ??
+            null,
           gotOffAtStopName:
             action.payload?.gotOffAtStopName ??
             state.studentChoices?.gotOffAtStopName ??

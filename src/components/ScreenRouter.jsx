@@ -20,6 +20,7 @@ import ResultCutscene from '../screens/ResultCutscene.jsx';
 import ResultScreen from '../screens/ResultScreen.jsx';
 import TeacherReport from '../screens/TeacherReport.jsx';
 import TeacherSettings from '../screens/TeacherSettings.jsx';
+import AvatarHelperDemo from '../screens/AvatarHelperDemo.jsx';
 
 const screenMap = {
   [SCREEN_IDS.startScreen]: StartScreen,
@@ -42,6 +43,7 @@ const screenMap = {
   [SCREEN_IDS.resultScreen]: ResultScreen,
   [SCREEN_IDS.teacherReport]: TeacherReport,
   [SCREEN_IDS.teacherSettings]: TeacherSettings,
+  [SCREEN_IDS.avatarHelperDemo]: AvatarHelperDemo,
 };
 
 export default function ScreenRouter() {

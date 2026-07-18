@@ -33,6 +33,14 @@ export default function StartScreen() {
           onClick={() => goToScreen(SCREEN_IDS.studentSelect)}
           className="absolute left-[5.5%] top-[62%] h-[14%] w-[40%] cursor-pointer rounded-full bg-transparent transition-transform duration-200 hover:scale-[1.01] focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/80"
         />
+
+        <button
+          type="button"
+          onClick={() => goToScreen(SCREEN_IDS.avatarHelperDemo)}
+          className="absolute bottom-3 right-3 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm font-bold text-slate-600 shadow-sm transition hover:bg-white focus:outline-none focus-visible:ring-4 focus-visible:ring-amber-300/80"
+        >
+          아바타 함수 데모
+        </button>
       </div>
     </section>
   );

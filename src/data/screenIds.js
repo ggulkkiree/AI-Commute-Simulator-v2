@@ -20,6 +20,7 @@ export const SCREEN_IDS = {
   resultScreen: 'resultScreen',
   teacherReport: 'teacherReport',
   teacherSettings: 'teacherSettings',
+  avatarHelperDemo: 'avatarHelperDemo',
 };
 
 export const CORE_SCREEN_FLOW = [
